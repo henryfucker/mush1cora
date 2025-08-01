@@ -5,6 +5,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService") -- Para animações suaves
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
@@ -12,12 +13,16 @@ local Mouse = LocalPlayer:GetMouse()
 local CONFIG = {
     NOME_HUB = "mush1cora",
     VERSAO = "v2.0 Premium",
+    -- Cores da Mush1cora
     COR_PRINCIPAL = Color3.fromRGB(170, 0, 0), -- Vermelho principal
     COR_SECUNDARIA = Color3.fromRGB(20, 20, 20), -- Fundo escuro
     COR_TERCIARIA = Color3.fromRGB(40, 40, 40), -- Elementos secundários
-    COR_DESTAQUE = Color3.fromRGB(18, 98, 159), -- Azul para destaques (da EzLauncher)
-    COR_TEXTO_PRIMARIO = Color3.fromRGB(211, 216, 226), -- Texto claro (da EzLauncher)
-    COR_TEXTO_SECUNDARIO = Color3.fromRGB(92, 106, 124), -- Texto secundário (da EzLauncher)
+    -- Cores da EzLauncher (para UI)
+    COR_SIDEBAR = Color3.fromRGB(35, 47, 62), -- Fundo da sidebar
+    COR_DESTAQUE = Color3.fromRGB(18, 98, 159), -- Azul para destaques (topbar da seção)
+    COR_DIVISOR = Color3.fromRGB(112, 112, 112), -- Cinza para divisores
+    COR_TEXTO_PRIMARIO = Color3.fromRGB(211, 216, 226), -- Texto claro
+    COR_TEXTO_SECUNDARIO = Color3.fromRGB(92, 106, 124), -- Texto secundário
     FONTE = Enum.Font.SourceSans, -- Fonte da EzLauncher
     SITE_OFICIAL = "henry1911.fwh.is/mush1cora",
     LINK_ATUALIZACOES = "https://henry1911.ct.ws/mush1cora",
@@ -137,7 +142,7 @@ local function CriarJanelaAviso()
     TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 500, 0, 400)}):Play()
 end
 
--- Função para criar a GUI principal com nova UI
+-- Função para criar a GUI principal com UI da EzLauncher
 function CriarMainGUI()
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "Mush1coraHub"
@@ -152,11 +157,11 @@ function CriarMainGUI()
     MainFrame.BorderSizePixel = 0
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     MainFrame.ClipsDescendants = true
-    MainFrame.Active = true
-    MainFrame.Draggable = true
+    MainFrame.Active = true -- Necessário para Draggable
+    MainFrame.Draggable = true -- Torna arrastável
     CreateShadow(MainFrame)
 
-    -- Topbar
+    -- Topbar (estilo EzLauncher)
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Size = UDim2.new(1, 0, 0, 40)
@@ -210,7 +215,7 @@ function CriarMainGUI()
         MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end)
 
-    -- Container para seções
+    -- Container para seções (abaixo da topbar)
     local ContentContainer = Instance.new("Frame")
     ContentContainer.Name = "ContentContainer"
     ContentContainer.Size = UDim2.new(1, -20, 1, -60) -- Ajustado para espaço da topbar e padding
@@ -218,119 +223,83 @@ function CriarMainGUI()
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.ClipsDescendants = true
 
-    -- Sidebar (novo estilo)
-    local Sidebar = Instance.new("Frame")
-    Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 180, 1, 0)
-    Sidebar.Position = UDim2.new(0, 0, 0, 0)
-    Sidebar.BackgroundColor3 = Color3.fromRGB(35, 47, 62) -- Cor da EzLauncher
-    Sidebar.BorderSizePixel = 0
-
-    local SidebarTopBar = Instance.new("Frame")
-    SidebarTopBar.Name = "TopBar"
-    SidebarTopBar.Size = UDim2.new(0, 2, 0, 32)
-    SidebarTopBar.Position = UDim2.new(0, 0, 0, 0)
-    SidebarTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
-    SidebarTopBar.BorderSizePixel = 0
-
-    local SidebarDivider = Instance.new("Frame")
-    SidebarDivider.Name = "Divider"
-    SidebarDivider.Size = UDim2.new(1, 0, 0, 1)
-    SidebarDivider.Position = UDim2.new(0, 0, 0, 32)
-    SidebarDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
-    SidebarDivider.BackgroundTransparency = 0.75
-    SidebarDivider.BorderSizePixel = 0
-
-    local SidebarTitle = Instance.new("TextLabel")
-    SidebarTitle.Name = "Title"
-    SidebarTitle.Text = "Menu"
-    SidebarTitle.Font = CONFIG.FONTE
-    SidebarTitle.TextSize = 14
-    SidebarTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
-    SidebarTitle.BackgroundTransparency = 1
-    SidebarTitle.Size = UDim2.new(1, -12, 0, 24)
-    SidebarTitle.Position = UDim2.new(0, 12, 0, 4)
-    SidebarTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-    local SidebarScroll = Instance.new("ScrollingFrame")
-    SidebarScroll.Name = "Scroll"
-    SidebarScroll.Size = UDim2.new(1, 0, 1, -42) -- Espaço para topbar
-    SidebarScroll.Position = UDim2.new(0, 0, 0, 42)
-    SidebarScroll.BackgroundTransparency = 1
-    SidebarScroll.ScrollBarThickness = 5
-    SidebarScroll.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
-    SidebarScroll.CanvasSize = UDim2.new(0, 0, 0, 0) -- Será ajustado dinamicamente
-
-    local SidebarLayout = Instance.new("UIListLayout")
-    SidebarLayout.Padding = UDim.new(0, 5)
-    SidebarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    SidebarLayout.Parent = SidebarScroll
-
-    -- Função para criar botão de sidebar (estilo EzLauncher)
-    local function CriarBotaoSidebar(nome)
-        local button = Instance.new("TextButton")
-        button.Name = nome .. "Button"
-        button.Text = nome
-        button.Font = CONFIG.FONTE
-        button.TextSize = 16
-        button.Size = UDim2.new(0.9, 0, 0, 40)
-        button.BackgroundColor3 = CONFIG.COR_TERCIARIA
-        button.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
-        button.BorderSizePixel = 0
-        button.AutoButtonColor = false -- Desativar cor automática
-
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(112, 112, 112) -- Cor da borda da EzLauncher
-        stroke.Thickness = 1
-        stroke.Parent = button
-
-        button.MouseEnter:Connect(function()
-            button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-        end)
-        button.MouseLeave:Connect(function()
-            button.BackgroundColor3 = CONFIG.COR_TERCIARIA
-        end)
-
-        return button
+    -- Funções úteis
+    local function GetSaudacao()
+        local hora = os.date("*t").hour
+        if hora < 12 then
+            return "Bom dia"
+        elseif hora < 18 then
+            return "Boa tarde"
+        else
+            return "Boa noite"
+        end
     end
 
-    -- Seções de conteúdo (novo estilo)
-    local Sections = {}
+    local function ShowNotification(title, text, icon)
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = 3,
+            Icon = icon
+        })
+    end
+
+    -- Função para criar uma seção estilo EzLauncher
+    local function CriarSecao(nome, altura)
+        local secao = Instance.new("Frame")
+        secao.Name = nome .. "Section"
+        secao.Size = UDim2.new(1, 0, 0, altura or 200) -- Altura padrão ou especificada
+        secao.BackgroundColor3 = CONFIG.COR_SIDEBAR
+        secao.BorderSizePixel = 0
+
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 4)
+        UICorner.Parent = secao
+
+        -- Pasta para elementos da topbar da seção
+        local SectionTopBar = Instance.new("Folder")
+        SectionTopBar.Name = "SectionTopBar"
+
+        local TopBarFrame = Instance.new("Frame")
+        TopBarFrame.Name = "TopBarFrame"
+        TopBarFrame.BackgroundColor3 = CONFIG.COR_DESTAQUE
+        TopBarFrame.Size = UDim2.new(0, 2, 0, 32)
+        TopBarFrame.Parent = SectionTopBar
+
+        local TopBarCorner = Instance.new("UICorner")
+        TopBarCorner.Parent = TopBarFrame
+
+        local Divider = Instance.new("Frame")
+        Divider.Name = "Divider"
+        Divider.BackgroundColor3 = CONFIG.COR_DIVISOR
+        Divider.BackgroundTransparency = 0.75
+        Divider.BorderSizePixel = 0
+        Divider.Position = UDim2.new(0, 0, 0, 32)
+        Divider.Size = UDim2.new(1, 0, 0, 1)
+        Divider.Parent = SectionTopBar
+
+        local SectionTitle = Instance.new("TextLabel")
+        SectionTitle.Name = "Title"
+        SectionTitle.Text = nome
+        SectionTitle.Font = CONFIG.FONTE
+        SectionTitle.TextSize = 14
+        SectionTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+        SectionTitle.BackgroundTransparency = 1
+        SectionTitle.Size = UDim2.new(1, -12, 0, 24)
+        SectionTitle.Position = UDim2.new(0, 12, 0, 4)
+        SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+        SectionTitle.Parent = SectionTopBar
+
+        SectionTopBar.Parent = secao
+
+        return secao
+    end
 
     -- Seção Sobre (estilo EzLauncher)
-    local SobreSection = Instance.new("Frame")
+    local SobreSection = CriarSecao("Sobre", 200)
     SobreSection.Name = "SobreSection"
-    SobreSection.Size = UDim2.new(1, -190, 1, 0) -- Largura total menos sidebar
-    SobreSection.Position = UDim2.new(0, 190, 0, 0) -- À direita da sidebar
-    SobreSection.BackgroundTransparency = 1
+    SobreSection.Size = UDim2.new(1, 0, 1, 0) -- Preenche todo o ContentContainer
     SobreSection.Visible = true
-
-    local SobreTopBar = Instance.new("Frame")
-    SobreTopBar.Name = "TopBar"
-    SobreTopBar.Size = UDim2.new(0, 2, 0, 32)
-    SobreTopBar.Position = UDim2.new(0, 0, 0, 0)
-    SobreTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
-    SobreTopBar.BorderSizePixel = 0
-
-    local SobreDivider = Instance.new("Frame")
-    SobreDivider.Name = "Divider"
-    SobreDivider.Size = UDim2.new(1, 0, 0, 1)
-    SobreDivider.Position = UDim2.new(0, 0, 0, 32)
-    SobreDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
-    SobreDivider.BackgroundTransparency = 0.75
-    SobreDivider.BorderSizePixel = 0
-
-    local SobreTitle = Instance.new("TextLabel")
-    SobreTitle.Name = "Title"
-    SobreTitle.Text = "Sobre"
-    SobreTitle.Font = CONFIG.FONTE
-    SobreTitle.TextSize = 14
-    SobreTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
-    SobreTitle.BackgroundTransparency = 1
-    SobreTitle.Size = UDim2.new(1, -12, 0, 24)
-    SobreTitle.Position = UDim2.new(0, 12, 0, 4)
-    SobreTitle.TextXAlignment = Enum.TextXAlignment.Left
 
     local Saudacao = Instance.new("TextLabel")
     Saudacao.Name = "Saudacao"
@@ -340,7 +309,7 @@ function CriarMainGUI()
     Saudacao.TextColor3 = CONFIG.COR_PRINCIPAL
     Saudacao.BackgroundTransparency = 1
     Saudacao.Size = UDim2.new(1, -20, 0, 30)
-    Saudacao.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar
+    Saudacao.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar da seção
     Saudacao.TextXAlignment = Enum.TextXAlignment.Left
 
     local Avatar = Instance.new("ImageLabel")
@@ -394,43 +363,16 @@ function CriarMainGUI()
     InfoText.TextWrapped = true
 
     -- Seção Scripts (estilo EzLauncher)
-    local ScriptsSection = Instance.new("Frame")
+    local ScriptsSection = CriarSecao("Scripts", 250)
     ScriptsSection.Name = "ScriptsSection"
-    ScriptsSection.Size = UDim2.new(1, -190, 1, 0) -- Largura total menos sidebar
-    ScriptsSection.Position = UDim2.new(0, 190, 0, 0) -- À direita da sidebar
-    ScriptsSection.BackgroundTransparency = 1
+    ScriptsSection.Size = UDim2.new(1, 0, 1, 0) -- Preenche todo o ContentContainer
     ScriptsSection.Visible = false
 
-    local ScriptsTopBar = Instance.new("Frame")
-    ScriptsTopBar.Name = "TopBar"
-    ScriptsTopBar.Size = UDim2.new(0, 2, 0, 32)
-    ScriptsTopBar.Position = UDim2.new(0, 0, 0, 0)
-    ScriptsTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
-    ScriptsTopBar.BorderSizePixel = 0
-
-    local ScriptsDivider = Instance.new("Frame")
-    ScriptsDivider.Name = "Divider"
-    ScriptsDivider.Size = UDim2.new(1, 0, 0, 1)
-    ScriptsDivider.Position = UDim2.new(0, 0, 0, 32)
-    ScriptsDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
-    ScriptsDivider.BackgroundTransparency = 0.75
-    ScriptsDivider.BorderSizePixel = 0
-
-    local ScriptsTitle = Instance.new("TextLabel")
-    ScriptsTitle.Name = "Title"
-    ScriptsTitle.Text = "Scripts"
-    ScriptsTitle.Font = CONFIG.FONTE
-    ScriptsTitle.TextSize = 14
-    ScriptsTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
-    ScriptsTitle.BackgroundTransparency = 1
-    ScriptsTitle.Size = UDim2.new(1, -12, 0, 24)
-    ScriptsTitle.Position = UDim2.new(0, 12, 0, 4)
-    ScriptsTitle.TextXAlignment = Enum.TextXAlignment.Left
-
+    -- ScrollingFrame para os scripts
     local ScriptsScroll = Instance.new("ScrollingFrame")
-    ScriptsScroll.Name = "Scroll"
+    ScriptsScroll.Name = "ScriptsScroll"
     ScriptsScroll.Size = UDim2.new(1, -20, 1, -52) -- Espaço para topbar e padding
-    ScriptsScroll.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar
+    ScriptsScroll.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar da seção
     ScriptsScroll.BackgroundTransparency = 1
     ScriptsScroll.ScrollBarThickness = 5
     ScriptsScroll.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
@@ -482,45 +424,55 @@ function CriarMainGUI()
         end)
     end
 
-    -- Funções úteis
-    local function GetSaudacao()
-        local hora = os.date("*t").hour
-        if hora < 12 then
-            return "Bom dia"
-        elseif hora < 18 then
-            return "Boa tarde"
-        else
-            return "Boa noite"
-        end
-    end
+    -- Tabela para gerenciar seções
+    local Sections = {
+        Sobre = SobreSection,
+        Scripts = ScriptsSection
+    }
 
-    local function ShowNotification(title, text, icon)
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = 3,
-            Icon = icon
-        })
-    end
+    -- Botões de navegação (simulando sidebar)
+    local sobreBtn = Instance.new("TextButton")
+    sobreBtn.Name = "SobreButton"
+    sobreBtn.Text = "Sobre"
+    sobreBtn.Font = CONFIG.FONTE
+    sobreBtn.TextSize = 16
+    sobreBtn.Size = UDim2.new(0, 100, 0, 30)
+    sobreBtn.Position = UDim2.new(0, 10, 0, 10) -- Posição fixa para exemplo
+    sobreBtn.BackgroundColor3 = CONFIG.COR_PRINCIPAL
+    sobreBtn.TextColor3 = Color3.new(1, 1, 1)
+    sobreBtn.BorderSizePixel = 0
+    sobreBtn.Visible = false -- Escondido pois a navegação será feita por botões na topbar ou sidebar real
 
-    -- Criar botões sidebar
-    local sobreBtn = CriarBotaoSidebar("Sobre")
-    sobreBtn.Parent = SidebarScroll
-    local scriptsBtn = CriarBotaoSidebar("Scripts")
-    scriptsBtn.Parent = SidebarScroll
+    local scriptsBtn = Instance.new("TextButton")
+    scriptsBtn.Name = "ScriptsButton"
+    scriptsBtn.Text = "Scripts"
+    scriptsBtn.Font = CONFIG.FONTE
+    scriptsBtn.TextSize = 16
+    scriptsBtn.Size = UDim2.new(0, 100, 0, 30)
+    scriptsBtn.Position = UDim2.new(0, 120, 0, 10) -- Posição fixa para exemplo
+    scriptsBtn.BackgroundColor3 = CONFIG.COR_TERCIARIA
+    scriptsBtn.TextColor3 = Color3.new(1, 1, 1)
+    scriptsBtn.BorderSizePixel = 0
+    scriptsBtn.Visible = false
 
-    -- Eventos dos botões sidebar
+    -- Eventos dos botões de navegação (exemplo)
     sobreBtn.MouseButton1Click:Connect(function()
         for _, section in pairs(Sections) do
             section.Visible = false
         end
         SobreSection.Visible = true
+        -- Atualizar aparência dos botões
+        sobreBtn.BackgroundColor3 = CONFIG.COR_PRINCIPAL
+        scriptsBtn.BackgroundColor3 = CONFIG.COR_TERCIARIA
     end)
     scriptsBtn.MouseButton1Click:Connect(function()
         for _, section in pairs(Sections) do
             section.Visible = false
         end
         ScriptsSection.Visible = true
+        -- Atualizar aparência dos botões
+        scriptsBtn.BackgroundColor3 = CONFIG.COR_PRINCIPAL
+        sobreBtn.BackgroundColor3 = CONFIG.COR_TERCIARIA
     end)
 
     -- Botões topbar
@@ -546,29 +498,18 @@ function CriarMainGUI()
 
     ContentContainer.Parent = MainFrame
 
-    Sidebar.Parent = ContentContainer
-    SidebarTopBar.Parent = Sidebar
-    SidebarDivider.Parent = Sidebar
-    SidebarTitle.Parent = Sidebar
-    SidebarScroll.Parent = Sidebar
-
     SobreSection.Parent = ContentContainer
-    SobreTopBar.Parent = SobreSection
-    SobreDivider.Parent = SobreSection
-    SobreTitle.Parent = SobreSection
     Saudacao.Parent = SobreSection
     Avatar.Parent = SobreSection
     InfoFrame.Parent = SobreSection
     InfoText.Parent = InfoFrame
 
     ScriptsSection.Parent = ContentContainer
-    ScriptsTopBar.Parent = ScriptsSection
-    ScriptsDivider.Parent = ScriptsSection
-    ScriptsTitle.Parent = ScriptsSection
     ScriptsScroll.Parent = ScriptsSection
+    -- ScriptsLayout já foi parentado
 
-    Sections["Sobre"] = SobreSection
-    Sections["Scripts"] = ScriptsSection
+    -- sobreBtn.Parent = ScreenGui -- Descomente se quiser mostrar os botões de navegação
+    -- scriptsBtn.Parent = ScreenGui
 
     MainFrame.Parent = ScreenGui
     ScreenGui.Parent = game.CoreGui
@@ -578,7 +519,7 @@ function CriarMainGUI()
     local tween = TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 700, 0, 500)})
     tween:Play()
 
-    -- Tornar a janela arrastável
+    -- Tornar a janela arrastável (função melhorada)
     local function MakeDraggable(guiObject)
         local dragging
         local dragInput
