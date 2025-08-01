@@ -1,5 +1,8 @@
--- [[ MUSH1CORA HUB - Brookhaven RP Script Hub ]] --
+-- [[ MUSH1CORA HUB - Universal Script Hub ]] --
 -- [[ Desenvolvido por Henry1911 ]] --
+
+-- [[ Carregar Material UI Library ]] --
+local Material = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/MaterialLua/master/Module.lua"))()
 
 -- [[ Função para obter saudação ]] --
 local function getGreeting()
@@ -13,7 +16,7 @@ local function getGreeting()
     end
 end
 
--- [[ Tocar Som de Startup (Windows 95) ]] --
+-- [[ Tocar Som de Startup ]] --
 spawn(function()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://1841928191" -- Som do Windows 95
@@ -23,346 +26,229 @@ spawn(function()
     game:GetService("Debris"):AddItem(sound, sound.TimeLength)
 end)
 
--- [[ Criar GUI Principal ]] --
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "Mush1coraHub"
-screenGui.Parent = game.CoreGui
-screenGui.ResetOnSpawn = false
+-- [[ Criar Janela Principal ]] --
+local Window = Material.Load({
+    Title = "Mush1cora Hub - Universal",
+    Style = 2,
+    SizeX = 500,
+    SizeY = 370,
+    Theme = "Dark",
+    ColorOverrides = {
+        MainFrame = Color3.fromRGB(25, 25, 25),
+        TopFrame = Color3.fromRGB(200, 0, 0),
+        TabsFrame = Color3.fromRGB(35, 35, 35),
+        Container = Color3.fromRGB(30, 30, 30),
+        Section = Color3.fromRGB(40, 40, 40),
+        Element = Color3.fromRGB(50, 50, 50),
+        ElementBorder = Color3.fromRGB(70, 70, 70),
+        SelectedTab = Color3.fromRGB(200, 0, 0),
+        UnselectedTab = Color3.fromRGB(100, 100, 100),
+        TextColor = Color3.fromRGB(255, 255, 255),
+        SubTextColor = Color3.fromRGB(200, 200, 200),
+        HoverEffect = Color3.fromRGB(60, 60, 60),
+        NotificationBackground = Color3.fromRGB(30, 30, 30),
+        NotificationBorder = Color3.fromRGB(200, 0, 0),
+    }
+})
 
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 600, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
-
--- [[ Topbar ]] --
-local topbar = Instance.new("Frame")
-topbar.Name = "Topbar"
-topbar.Size = UDim2.new(1, 0, 0, 30)
-topbar.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-topbar.BorderSizePixel = 0
-topbar.Parent = mainFrame
-
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Size = UDim2.new(1, -60, 1, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "Mush1cora Hub - Brookhaven RP | v1.0.0"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.Font = Enum.Font.Code
-titleLabel.TextSize = 14
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.Position = UDim2.new(0, 10, 0, 0)
-titleLabel.Parent = topbar
-
--- [[ Botões da Topbar ]] --
-local minimizeButton = Instance.new("TextButton")
-minimizeButton.Name = "MinimizeButton"
-minimizeButton.Size = UDim2.new(0, 30, 1, 0)
-minimizeButton.Position = UDim2.new(1, -60, 0, 0)
-minimizeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-minimizeButton.Text = "_"
-minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeButton.Font = Enum.Font.Code
-minimizeButton.TextSize = 16
-minimizeButton.BorderSizePixel = 0
-minimizeButton.Parent = topbar
-
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 30, 1, 0)
-closeButton.Position = UDim2.new(1, -30, 0, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Font = Enum.Font.Code
-closeButton.TextSize = 16
-closeButton.BorderSizePixel = 0
-closeButton.Parent = topbar
-
--- [[ Sidebar ]] --
-local sidebar = Instance.new("Frame")
-sidebar.Name = "Sidebar"
-sidebar.Size = UDim2.new(0, 150, 1, -30)
-sidebar.Position = UDim2.new(0, 0, 0, 30)
-sidebar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-sidebar.BorderSizePixel = 0
-sidebar.Parent = mainFrame
-
--- [[ Conteúdo Principal ]] --
-local contentFrame = Instance.new("Frame")
-contentFrame.Name = "ContentFrame"
-contentFrame.Size = UDim2.new(1, -150, 1, -30)
-contentFrame.Position = UDim2.new(0, 150, 0, 30)
-contentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-contentFrame.BorderSizePixel = 0
-contentFrame.Parent = mainFrame
-
--- [[ Função para criar botões da sidebar ]] --
-local function createSidebarButton(text, position)
-    local button = Instance.new("TextButton")
-    button.Name = text .. "Button"
-    button.Size = UDim2.new(1, -20, 0, 30)
-    button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    button.Text = text
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.Code
-    button.TextSize = 14
-    button.BorderSizePixel = 0
-    button.Parent = sidebar
-    return button
+-- [[ Notificação Inicial Personalizada ]] --
+local function showCustomNotification(title, content, duration)
+    Window:Notify({
+        Title = title,
+        Content = content,
+        Duration = duration or 5,
+        Image = nil
+    })
 end
 
--- [[ Criar botões da sidebar ]] --
-local aboutButton = createSidebarButton("🏠 Sobre", UDim2.new(0, 10, 0, 10))
-local scriptsButton = createSidebarButton("🧰 Scripts", UDim2.new(0, 10, 0, 50))
+showCustomNotification("Bem-vindo!", "Hub carregada com sucesso!")
 
--- [[ Função para limpar conteúdo ]] --
-local function clearContent()
-    for _, child in pairs(contentFrame:GetChildren()) do
-        if child:IsA("GuiObject") then
-            child:Destroy()
+-- [[ Aba "Sobre" ]] --
+local AboutTab = Window.newTab("🏠 Sobre")
+
+local AboutSection = AboutTab:newSection("Bem-vindo")
+
+-- [[ Avatar do Usuário ]] --
+local Player = game.Players.LocalPlayer
+local userId = Player.UserId
+local thumbType = Enum.ThumbnailType.HeadShot
+local thumbSize = Enum.ThumbnailSize.Size100x100
+local content, isReady = game.Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+
+local AvatarElement = AboutSection:new({
+    Type = "Image",
+    Data = {
+        Image = content,
+        Size = UDim2.new(0, 100, 0, 100),
+        Position = UDim2.new(0, 0, 0, 0)
+    }
+})
+
+-- [[ Informações da Hub ]] --
+AboutSection:Label({Text = getGreeting() .. ", " .. Player.DisplayName .. "!"})
+AboutSection:Label({Text = "Versão: v1.2.0"})
+AboutSection:Label({Text = "Scripts Disponíveis: 10+"})
+AboutSection:Label({Text = "Site oficial: henry1911.ct.ws/mush1cora"})
+AboutSection:Label({Text = "Atualizações são diretas, não é necessário trocar o link."})
+
+-- [[ Changelog ]] --
+local ChangelogSection = AboutTab:newSection("Changelog - Versão Atual")
+ChangelogSection:Label({Text = "• Interface totalmente redesenhada"})
+ChangelogSection:Label({Text = "• Suporte a múltiplos jogos"})
+ChangelogSection:Label({Text = "• Sistema de notificações personalizadas"})
+ChangelogSection:Label({Text = "• Design premium com tema personalizado"})
+
+-- [[ Scripts para Brookhaven RP ]] --
+local BrookhavenTab = Window.newTab("🏘️ Brookhaven")
+
+local BrookhavenSection = BrookhavenTab:newSection("Scripts para Brookhaven RP")
+
+BrookhavenSection:Button({
+    Text = "Soluna",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Soluna...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Soluna carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Soluna: " .. tostring(err))
         end
     end
-end
+})
 
--- [[ Função para mostrar conteúdo Sobre ]] --
-local function showAbout()
-    clearContent()
-    
-    local welcomeLabel = Instance.new("TextLabel")
-    welcomeLabel.Name = "WelcomeLabel"
-    welcomeLabel.Size = UDim2.new(1, -20, 0, 30)
-    welcomeLabel.Position = UDim2.new(0, 10, 0, 10)
-    welcomeLabel.BackgroundTransparency = 1
-    welcomeLabel.Text = getGreeting() .. ", " .. game.Players.LocalPlayer.DisplayName .. "!"
-    welcomeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    welcomeLabel.Font = Enum.Font.Code
-    welcomeLabel.TextSize = 16
-    welcomeLabel.TextXAlignment = Enum.TextXAlignment.Left
-    welcomeLabel.Parent = contentFrame
-    
-    -- [[ Avatar do Usuário ]] --
-    local userId = game.Players.LocalPlayer.UserId
-    local thumbType = Enum.ThumbnailType.HeadShot
-    local thumbSize = Enum.ThumbnailSize.Size100x100
-    local content, isReady = game.Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-    
-    local avatarImage = Instance.new("ImageLabel")
-    avatarImage.Name = "AvatarImage"
-    avatarImage.Size = UDim2.new(0, 100, 0, 100)
-    avatarImage.Position = UDim2.new(0, 10, 0, 50)
-    avatarImage.BackgroundTransparency = 1
-    avatarImage.Image = content
-    avatarImage.Parent = contentFrame
-    
-    -- [[ Informações da Hub ]] --
-    local infoLabel1 = Instance.new("TextLabel")
-    infoLabel1.Name = "InfoLabel1"
-    infoLabel1.Size = UDim2.new(1, -130, 0, 20)
-    infoLabel1.Position = UDim2.new(0, 120, 0, 50)
-    infoLabel1.BackgroundTransparency = 1
-    infoLabel1.Text = "Versão: v1.0.0"
-    infoLabel1.TextColor3 = Color3.fromRGB(255, 100, 100)
-    infoLabel1.Font = Enum.Font.Code
-    infoLabel1.TextSize = 14
-    infoLabel1.TextXAlignment = Enum.TextXAlignment.Left
-    infoLabel1.Parent = contentFrame
-    
-    local infoLabel2 = Instance.new("TextLabel")
-    infoLabel2.Name = "InfoLabel2"
-    infoLabel2.Size = UDim2.new(1, -130, 0, 20)
-    infoLabel2.Position = UDim2.new(0, 120, 0, 75)
-    infoLabel2.BackgroundTransparency = 1
-    infoLabel2.Text = "Scripts Disponíveis: 5"
-    infoLabel2.TextColor3 = Color3.fromRGB(255, 100, 100)
-    infoLabel2.Font = Enum.Font.Code
-    infoLabel2.TextSize = 14
-    infoLabel2.TextXAlignment = Enum.TextXAlignment.Left
-    infoLabel2.Parent = contentFrame
-    
-    local infoLabel3 = Instance.new("TextLabel")
-    infoLabel3.Name = "InfoLabel3"
-    infoLabel3.Size = UDim2.new(1, -130, 0, 20)
-    infoLabel3.Position = UDim2.new(0, 120, 0, 100)
-    infoLabel3.BackgroundTransparency = 1
-    infoLabel3.Text = "Site: henry1911.ct.ws/mush1cora"
-    infoLabel3.TextColor3 = Color3.fromRGB(255, 100, 100)
-    infoLabel3.Font = Enum.Font.Code
-    infoLabel3.TextSize = 14
-    infoLabel3.TextXAlignment = Enum.TextXAlignment.Left
-    infoLabel3.Parent = contentFrame
-    
-    local infoLabel4 = Instance.new("TextLabel")
-    infoLabel4.Name = "InfoLabel4"
-    infoLabel4.Size = UDim2.new(1, -20, 0, 20)
-    infoLabel4.Position = UDim2.new(0, 10, 0, 160)
-    infoLabel4.BackgroundTransparency = 1
-    infoLabel4.Text = "Atualizações são diretas, não é necessário trocar o link."
-    infoLabel4.TextColor3 = Color3.fromRGB(200, 200, 200)
-    infoLabel4.Font = Enum.Font.Code
-    infoLabel4.TextSize = 12
-    infoLabel4.TextXAlignment = Enum.TextXAlignment.Left
-    infoLabel4.Parent = contentFrame
-    
-    -- [[ Changelog ]] --
-    local changelogLabel = Instance.new("TextLabel")
-    changelogLabel.Name = "ChangelogLabel"
-    changelogLabel.Size = UDim2.new(1, -20, 0, 20)
-    changelogLabel.Position = UDim2.new(0, 10, 0, 200)
-    changelogLabel.BackgroundTransparency = 1
-    changelogLabel.Text = "Changelog - Versão Atual:"
-    changelogLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    changelogLabel.Font = Enum.Font.Code
-    changelogLabel.TextSize = 14
-    changelogLabel.TextXAlignment = Enum.TextXAlignment.Left
-    changelogLabel.Parent = contentFrame
-    
-    local changelogText = Instance.new("TextLabel")
-    changelogText.Name = "ChangelogText"
-    changelogText.Size = UDim2.new(1, -20, 0, 60)
-    changelogText.Position = UDim2.new(0, 10, 0, 225)
-    changelogText.BackgroundTransparency = 1
-    changelogText.Text = "• Versão inicial da Mush1cora Hub\n• Integração com 5 scripts de Brookhaven\n• Design premium com tema preto e vermelho"
-    changelogText.TextColor3 = Color3.fromRGB(200, 200, 200)
-    changelogText.Font = Enum.Font.Code
-    changelogText.TextSize = 12
-    changelogText.TextXAlignment = Enum.TextXAlignment.Left
-    changelogText.TextYAlignment = Enum.TextYAlignment.Top
-    changelogText.Parent = contentFrame
-end
-
--- [[ Função para mostrar conteúdo Scripts ]] --
-local function showScripts()
-    clearContent()
-    
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Name = "ScriptsTitle"
-    titleLabel.Size = UDim2.new(1, -20, 0, 30)
-    titleLabel.Position = UDim2.new(0, 10, 0, 10)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = "Scripts Disponíveis"
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.Font = Enum.Font.Code
-    titleLabel.TextSize = 16
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = contentFrame
-    
-    -- [[ Função para criar botões de script ]] --
-    local function createScriptButton(name, position, callback)
-        local button = Instance.new("TextButton")
-        button.Name = name .. "Button"
-        button.Size = UDim2.new(1, -20, 0, 30)
-        button.Position = position
-        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        button.Text = name
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.Font = Enum.Font.Code
-        button.TextSize = 14
-        button.BorderSizePixel = 0
-        button.Parent = contentFrame
-        
-        button.MouseButton1Click:Connect(callback)
-        return button
-    end
-    
-    -- [[ Criar botões dos scripts ]] --
-    createScriptButton("Soluna", UDim2.new(0, 10, 0, 50), function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true))()
-    end)
-    
-    createScriptButton("XXXOMER13245678", UDim2.new(0, 10, 0, 90), function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/LCmR8qkj"))()
-    end)
-    
-    createScriptButton("FHub", UDim2.new(0, 10, 0, 130), function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()
-    end)
-    
-    createScriptButton("IceHub", UDim2.new(0, 10, 0, 170), function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"))()
-    end)
-    
-    createScriptButton("Sander XY (Bypass Deluxe)", UDim2.new(0, 10, 0, 210), function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid"))()
-    end)
-end
-
--- [[ Conectar eventos dos botões da sidebar ]] --
-aboutButton.MouseButton1Click:Connect(showAbout)
-scriptsButton.MouseButton1Click:Connect(showScripts)
-
--- [[ Conectar eventos da topbar ]] --
-minimizeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-end)
-
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
-
--- [[ Tornar a janela draggable ]] --
-local dragging
-local dragInput
-local dragStart
-local startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-topbar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
+BrookhavenSection:Button({
+    Text = "XXXOMER13245678",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando XXXOMER...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/LCmR8qkj"))()
         end)
+        if success then
+            showCustomNotification("Sucesso!", "XXXOMER carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar XXXOMER: " .. tostring(err))
+        end
     end
-end)
+})
 
-topbar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
+BrookhavenSection:Button({
+    Text = "FHub",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando FHub...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "FHub carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar FHub: " .. tostring(err))
+        end
     end
-end)
+})
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
+BrookhavenSection:Button({
+    Text = "IceHub",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando IceHub...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "IceHub carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar IceHub: " .. tostring(err))
+        end
     end
-end)
+})
 
--- [[ Botão Flutuante para Mostrar/Esconder GUI ]] --
-local DraggableObject = Instance.new("ScreenGui")
-DraggableObject.Name = "DraggableObject"
-DraggableObject.Parent = game.CoreGui
-DraggableObject.ResetOnSpawn = false
+BrookhavenSection:Button({
+    Text = "Sander XY (Bypass Deluxe)",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Sander XY...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Sander XY carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Sander XY: " .. tostring(err))
+        end
+    end
+})
 
-local DragButton = Instance.new("TextButton")
-DragButton.Name = "DragButton"
-DragButton.Size = UDim2.new(0, 50, 0, 50)
-DragButton.Position = UDim2.new(0, 300, 0, 300)
-DragButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-DragButton.Text = "👁"
-DragButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DragButton.Font = Enum.Font.Code
-DragButton.TextSize = 20
-DragButton.BorderSizePixel = 0
-DragButton.Draggable = true
-DragButton.Parent = DraggableObject
+-- [[ Scripts para Legends of Speed ]] --
+local LegendsTab = Window.newTab("⚡ Legends of Speed")
 
-DragButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-end)
+local LegendsSection = LegendsTab:newSection("Scripts para Legends of Speed")
+
+LegendsSection:Button({
+    Text = "Auto Farm",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Auto Farm...")
+        local success, err = pcall(function()
+            -- Substitua pela URL real do script
+            -- loadstring(game:HttpGet("URL_DO_SCRIPT"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Auto Farm carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Auto Farm: " .. tostring(err))
+        end
+    end
+})
+
+LegendsSection:Button({
+    Text = "Auto Click",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Auto Click...")
+        local success, err = pcall(function()
+            -- Substitua pela URL real do script
+            -- loadstring(game:HttpGet("URL_DO_SCRIPT"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Auto Click carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Auto Click: " .. tostring(err))
+        end
+    end
+})
+
+-- [[ Mais Scripts Universais ]] --
+local UniversalTab = Window.newTab("🌐 Universal")
+
+local UniversalSection = UniversalTab:newSection("Scripts Universais")
+
+UniversalSection:Button({
+    Text = "Infinite Yield",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Infinite Yield...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Infinite Yield carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Infinite Yield: " .. tostring(err))
+        end
+    end
+})
+
+UniversalSection:Button({
+    Text = "Dex Explorer",
+    Callback = function()
+        showCustomNotification("Executando...", "Carregando Dex Explorer...")
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Universal/BypassedDarkDexV3.lua"))()
+        end)
+        if success then
+            showCustomNotification("Sucesso!", "Dex Explorer carregado com sucesso!")
+        else
+            showCustomNotification("Erro!", "Falha ao carregar Dex Explorer: " .. tostring(err))
+        end
+    end
+})
 
 -- [[ Aviso Legal na Inicialização ]] --
 local WarningGui = Instance.new("ScreenGui")
@@ -380,7 +266,7 @@ WarningFrame.Parent = WarningGui
 local WarningLabel = Instance.new("TextLabel")
 WarningLabel.Size = UDim2.new(1, 0, 0.6, 0)
 WarningLabel.BackgroundTransparency = 1
-WarningLabel.Text = "Você está prestes a iniciar a Mush1cora Hub.\n\nAo continuar, você assume total responsabilidade por possíveis penalidades impostas pela administração do Roblox.\n\nSite oficial: henry1911.fwh.is/mush1cora"
+WarningLabel.Text = "Você está prestes a iniciar a Mush1cora Hub.\n\nAo continuar, você assume total responsabilidade por possíveis penalidades impostas pela administração do Roblox.\n\nSite oficial: henry1911.ct.ws/mush1cora"
 WarningLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 WarningLabel.Font = Enum.Font.Code
 WarningLabel.TextSize = 14
@@ -400,9 +286,7 @@ AcceptButton.Parent = WarningFrame
 
 AcceptButton.MouseButton1Click:Connect(function()
     WarningGui:Destroy()
-    mainFrame.Visible = true
-    showAbout() -- Mostrar a aba Sobre por padrão
+    Window:Show()
 end)
 
--- Inicialmente esconder a GUI principal
-mainFrame.Visible = false
+Window:Hide() -- Esconder a janela inicialmente
