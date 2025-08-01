@@ -1,167 +1,189 @@
--- Mush1cora Script Hub v2.0 Premium - UI com Rayfield
--- Por Henry1911 (henry1911.fwh.is/mush1cora)
+-- [[ MUSH1CORA HUB - Brookhaven RP Script Hub ]] --
+-- [[ Desenvolvido por Henry1911 ]] --
 
--- Configurações Premium
-local CONFIG = {
-    NOME_HUB = "mush1cora",
-    VERSAO = "v2.0 Premium",
-    COR_PRINCIPAL = Color3.fromRGB(170, 0, 0), -- Vermelho principal
-    COR_SECUNDARIA = Color3.fromRGB(20, 20, 20), -- Fundo escuro
-    COR_TERCIARIA = Color3.fromRGB(40, 40, 40), -- Elementos secundários
-    SITE_OFICIAL = "henry1911.fwh.is/mush1cora",
-    LINK_ATUALIZACOES = "https://henry1911.ct.ws/mush1cora",
-    SCRIPTS = {
-        ["Soluna"] = "https://raw.githubusercontent.com/Patheticcs/Soluna-API/main/brookhaven.lua",
-        ["XXXOMER13245678"] = "https://pastebin.com/raw/LCmR8qkj",
-        ["FHub"] = "https://raw.githubusercontent.com/OpenSourceEngine/Script/main/Brookhaven.lua",
-        ["IceHub"] = "https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua",
-        ["Sander XY Deluxe"] = "https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/main/sander%20is%20a%20skid"
-    },
-    SOUND_STARTUP = 90703113106852
-}
+-- [[ Carregar Rayfield GUI ]] --
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/CustomFIeld/main/RayField.lua'))()
 
--- Carregar Rayfield
-local RayfieldLibrary = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/CustomFIeld/main/RayField.lua'))()
-
--- Notificação inicial
-RayfieldLibrary:Notify({
-   Title = CONFIG.NOME_HUB,
-   Content = "Abraço do henry1911!",
-   Duration = 5,
-   Image = 6726285816,
-   Actions = {
-      Ignore = {
-         Name = "Fechar",
-         Callback = function()
-         end
-      },
-   },
-})
-
--- Criar a janela principal
-local Window = RayfieldLibrary:CreateWindow({
-   Name = CONFIG.NOME_HUB .. " | " .. CONFIG.VERSAO,
-   LoadingTitle = "Carregando...",
-   LoadingSubtitle = "por Henry1911",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "mush1cora_hub_config"
-   },
-   KeySystem = false,
-})
-
--- Tab Início
-local MainTab = Window:CreateTab("🏠 Início", 4483362458) -- Ícone de casa
-
--- Seção Principal
-local MainSection = MainTab:CreateSection("Principal")
-
--- Saudação
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local function GetSaudacao()
-    local hora = os.date("*t").hour
-    if hora < 12 then
+-- [[ Função para obter saudação ]] --
+local function getGreeting()
+    local hour = tonumber(os.date("%H"))
+    if hour >= 6 and hour < 12 then
         return "Bom dia"
-    elseif hora < 18 then
+    elseif hour >= 12 and hour < 18 then
         return "Boa tarde"
     else
         return "Boa noite"
     end
 end
 
-MainTab:CreateLabel({Name = GetSaudacao() .. ", " .. LocalPlayer.DisplayName})
-MainTab:CreateLabel({Name = "Bem-vindo à " .. CONFIG.NOME_HUB .. " " .. CONFIG.VERSAO})
-
--- Avatar (opcional, pode ser complexo com Rayfield)
--- Seção de Informações
-local InfoSection = MainTab:CreateSection("Informações")
-MainTab:CreateLabel({Name = "• Scripts disponíveis: " .. #CONFIG.SCRIPTS})
-MainTab:CreateLabel({Name = "• Atualizações automáticas"})
-MainTab:CreateLabel({Name = "• Site oficial: " .. CONFIG.SITE_OFICIAL})
-MainTab:CreateLabel({Name = "Desenvolvido com ❤️ por Henry1911"})
-
--- Tab Scripts
-local ScriptsTab = Window:CreateTab("📜 Scripts", 4483362458) -- Ícone de lista
-
--- Seção de Scripts
-local ScriptsSection = ScriptsTab:CreateSection("Executar Scripts")
-
--- Criar botões para cada script
-for nome, url in pairs(CONFIG.SCRIPTS) do
-    ScriptsTab:CreateButton({
-        Name = nome,
-        Callback = function()
-            RayfieldLibrary:Notify({
-                Title = "Script Executado",
-                Content = "Iniciando " .. nome .. "...",
-                Duration = 3,
-                Image = 6726285816,
-                Actions = {
-                    Ignore = {
-                        Name = "Ok!",
-                        Callback = function()
-                            -- Notificação fechada
-                        end
-                    },
-                },
-            })
-            -- Adicionar um pequeno atraso para a notificação aparecer
-            task.spawn(function()
-                loadstring(game:HttpGet(url, true))()
-            end)
-        end,
-    })
-end
-
--- Tab Configurações (opcional)
-local ConfigTab = Window:CreateTab("⚙️ Configurações", 4483362458) -- Ícone de engrenagem
-
-local ConfigSection = ConfigTab:CreateSection("Configurações da Hub")
-
-ConfigTab:CreateToggle({
-    Name = "Notificações",
-    CurrentValue = true,
-    Flag = "Notifications",
-    Callback = function(Value)
-        -- Aqui você pode adicionar lógica para desativar/ativar notificações
-        print("Notificações:", Value)
-    end,
+-- [[ Tela de Início com Aviso Legal ]] --
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Mush1cora Hub";
+    Text = "Carregando...";
+    Duration = 3;
 })
 
-ConfigTab:CreateButton({
-    Name = "Verificar Atualizações",
-    Callback = function()
-        RayfieldLibrary:Notify({
-            Title = "Verificação",
-            Content = "Última versão: " .. CONFIG.VERSAO,
-            Duration = 5,
-            Image = 6726285816,
-            Actions = {
-                Ignore = {
-                    Name = "Ok!",
-                    Callback = function()
-                    end
-                },
-            },
-        })
-    end,
-})
-
-ConfigTab:CreateButton({
-    Name = "Fechar Hub",
-    Callback = function()
-        RayfieldLibrary:Destroy() -- Fecha a Rayfield e todos os elementos
-    end,
-})
-
--- Som de inicialização (tentativa)
-pcall(function()
+-- [[ Tocar Som de Startup (Windows 95) ]] --
+spawn(function()
     local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://" .. CONFIG.SOUND_STARTUP
-    sound.Volume = 1
-    sound.Parent = game:GetService("SoundService") or workspace
+    sound.SoundId = "rbxassetid://1841928191" -- Som do Windows 95
+    sound.Volume = 0.5
+    sound.Parent = workspace
     sound:Play()
     game:GetService("Debris"):AddItem(sound, sound.TimeLength)
 end)
+
+-- [[ Criar Janela Principal ]] --
+local Window = Rayfield:CreateWindow({
+    Name = "Mush1cora Hub - Brookhaven RP",
+    LoadingTitle = "Mush1cora Hub",
+    LoadingSubtitle = "Carregando scripts...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "Mush1coraHub",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false,
+    },
+    KeySystem = false
+})
+
+-- [[ Notificação Inicial ]] --
+Rayfield:Notify({
+    Title = "Bem-vindo!",
+    Content = "Hub carregada com sucesso!",
+    Duration = 5,
+    Image = nil
+})
+
+-- [[ Aba "Sobre" ]] --
+local AboutTab = Window:CreateTab("🏠 Sobre", 4483362458)
+local AboutSection = AboutTab:CreateSection("Bem-vindo, " .. getGreeting() .. ", " .. game.Players.LocalPlayer.DisplayName .. "!")
+
+-- [[ Avatar do Usuário ]] --
+local Player = game.Players.LocalPlayer
+local userId = Player.UserId
+local thumbType = Enum.ThumbnailType.HeadShot
+local thumbSize = Enum.ThumbnailSize.Size420x420
+local content, isReady = game.Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Size = UDim2.new(0, 100, 0, 100)
+ImageLabel.Image = content
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.Parent = AboutSection.Frame
+
+-- [[ Informações da Hub ]] --
+AboutTab:CreateLabel("Versão: v1.0.0")
+AboutTab:CreateLabel("Scripts Disponíveis: 5")
+AboutTab:CreateLabel("Verifique atualizações em: https://henry1911.ct.ws/mush1cora")
+AboutTab:CreateLabel("Atualizações são diretas, não é necessário trocar o link.")
+
+-- [[ Changelog ]] --
+local ChangelogSection = AboutTab:CreateSection("Changelog - Versão Atual")
+AboutTab:CreateLabel("• Versão inicial da Mush1cora Hub")
+AboutTab:CreateLabel("• Integração com 5 scripts de Brookhaven")
+AboutTab:CreateLabel("• Design premium com tema preto e vermelho")
+
+-- [[ Scripts Disponíveis ]] --
+local ScriptsTab = Window:CreateTab("🧰 Scripts", 4483362458)
+
+ScriptsTab:CreateButton({
+    Name = "Soluna",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true))()
+    end
+})
+
+ScriptsTab:CreateButton({
+    Name = "XXXOMER13245678",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/LCmR8qkj"))()
+    end
+})
+
+ScriptsTab:CreateButton({
+    Name = "FHub",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()
+    end
+})
+
+ScriptsTab:CreateButton({
+    Name = "IceHub",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"))()
+    end
+})
+
+ScriptsTab:CreateButton({
+    Name = "Sander XY (Bypass Deluxe)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid"))()
+    end
+})
+
+-- [[ Botão Flutuante para Mostrar/Esconder GUI ]] --
+local DraggableObject = Instance.new("ScreenGui")
+local DragButton = Instance.new("TextButton")
+
+DraggableObject.Name = "DraggableObject"
+DraggableObject.Parent = game.CoreGui
+
+DragButton.Name = "DragButton"
+DragButton.Size = UDim2.new(0, 50, 0, 50)
+DragButton.Position = UDim2.new(0, 300, 0, 300)
+DragButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+DragButton.Text = "👁"
+DragButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DragButton.Font = Enum.Font.Code
+DragButton.TextSize = 20
+DragButton.Draggable = true
+DragButton.Parent = DraggableObject
+
+local GuiVisible = true
+DragButton.MouseButton1Click:Connect(function()
+    Window.Frame.Visible = not Window.Frame.Visible
+end)
+
+-- [[ Aviso Legal na Inicialização ]] --
+local WarningGui = Instance.new("ScreenGui")
+local WarningFrame = Instance.new("Frame")
+local WarningLabel = Instance.new("TextLabel")
+local AcceptButton = Instance.new("TextButton")
+
+WarningGui.Name = "WarningGui"
+WarningGui.Parent = game.CoreGui
+
+WarningFrame.Size = UDim2.new(0, 400, 0, 250)
+WarningFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+WarningFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+WarningFrame.BorderSizePixel = 0
+WarningFrame.Parent = WarningGui
+
+WarningLabel.Size = UDim2.new(1, 0, 0.6, 0)
+WarningLabel.BackgroundTransparency = 1
+WarningLabel.Text = "Você está prestes a iniciar a Mush1cora Hub.\n\nAo continuar, você assume total responsabilidade por possíveis penalidades impostas pela administração do Roblox.\n\nSite oficial: henry1911.fwh.is/mush1cora"
+WarningLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+WarningLabel.Font = Enum.Font.Code
+WarningLabel.TextSize = 14
+WarningLabel.TextWrapped = true
+WarningLabel.Parent = WarningFrame
+
+AcceptButton.Size = UDim2.new(0, 100, 0, 30)
+AcceptButton.Position = UDim2.new(0.5, -50, 0.8, 0)
+AcceptButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+AcceptButton.Text = "Iniciar"
+AcceptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AcceptButton.Font = Enum.Font.Code
+AcceptButton.TextSize = 16
+AcceptButton.Parent = WarningFrame
+
+AcceptButton.MouseButton1Click:Connect(function()
+    WarningGui:Destroy()
+    Window.Frame.Visible = true
+end)
+
+Window.Frame.Visible = false
