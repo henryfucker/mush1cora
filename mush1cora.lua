@@ -16,25 +16,17 @@ local function getGreeting()
     end
 end
 
--- [[ Tela de Início com Aviso Legal ]] --
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Mush1cora Hub";
-    Text = "Carregando...";
-    Duration = 3;
-})
-
 -- [[ Tocar Som de Startup (Windows 95) ]] --
 spawn(function()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://1841928191" -- Som do Windows 95
     sound.Volume = 0.5
-    sound.Parent = workspace
+    sound.Parent = game:GetService("SoundService") or workspace
     sound:Play()
     game:GetService("Debris"):AddItem(sound, sound.TimeLength)
 end)
 
--- [[ Criar Janela Principal ]] --
+-- [[ Criar Janela Principal (inicialmente invisível) ]] --
 local Window = Rayfield:CreateWindow({
     Name = "Mush1cora Hub - Brookhaven RP",
     LoadingTitle = "Mush1cora Hub",
@@ -49,6 +41,9 @@ local Window = Rayfield:CreateWindow({
     },
     KeySystem = false
 })
+
+-- Esconde a janela inicialmente
+Window.Frame.Visible = false
 
 -- [[ Notificação Inicial ]] --
 Rayfield:Notify({
@@ -127,11 +122,11 @@ ScriptsTab:CreateButton({
 
 -- [[ Botão Flutuante para Mostrar/Esconder GUI ]] --
 local DraggableObject = Instance.new("ScreenGui")
-local DragButton = Instance.new("TextButton")
-
 DraggableObject.Name = "DraggableObject"
 DraggableObject.Parent = game.CoreGui
+DraggableObject.ResetOnSpawn = false
 
+local DragButton = Instance.new("TextButton")
 DragButton.Name = "DragButton"
 DragButton.Size = UDim2.new(0, 50, 0, 50)
 DragButton.Position = UDim2.new(0, 300, 0, 300)
@@ -143,26 +138,24 @@ DragButton.TextSize = 20
 DragButton.Draggable = true
 DragButton.Parent = DraggableObject
 
-local GuiVisible = true
 DragButton.MouseButton1Click:Connect(function()
     Window.Frame.Visible = not Window.Frame.Visible
 end)
 
 -- [[ Aviso Legal na Inicialização ]] --
 local WarningGui = Instance.new("ScreenGui")
-local WarningFrame = Instance.new("Frame")
-local WarningLabel = Instance.new("TextLabel")
-local AcceptButton = Instance.new("TextButton")
-
 WarningGui.Name = "WarningGui"
 WarningGui.Parent = game.CoreGui
+WarningGui.ResetOnSpawn = false
 
+local WarningFrame = Instance.new("Frame")
 WarningFrame.Size = UDim2.new(0, 400, 0, 250)
 WarningFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
 WarningFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WarningFrame.BorderSizePixel = 0
 WarningFrame.Parent = WarningGui
 
+local WarningLabel = Instance.new("TextLabel")
 WarningLabel.Size = UDim2.new(1, 0, 0.6, 0)
 WarningLabel.BackgroundTransparency = 1
 WarningLabel.Text = "Você está prestes a iniciar a Mush1cora Hub.\n\nAo continuar, você assume total responsabilidade por possíveis penalidades impostas pela administração do Roblox.\n\nSite oficial: henry1911.fwh.is/mush1cora"
@@ -172,6 +165,7 @@ WarningLabel.TextSize = 14
 WarningLabel.TextWrapped = true
 WarningLabel.Parent = WarningFrame
 
+local AcceptButton = Instance.new("TextButton")
 AcceptButton.Size = UDim2.new(0, 100, 0, 30)
 AcceptButton.Position = UDim2.new(0.5, -50, 0.8, 0)
 AcceptButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
@@ -185,5 +179,3 @@ AcceptButton.MouseButton1Click:Connect(function()
     WarningGui:Destroy()
     Window.Frame.Visible = true
 end)
-
-Window.Frame.Visible = false
