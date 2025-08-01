@@ -1,279 +1,264 @@
--- // Mush1Cora Hub - Script Hub Premium para Brookhaven
--- // Desenvolvido com base em Hyperlib, estilizado como terminal
--- // Autor: Mush1Cora | Baseado em autorização educacional
--- // Versão: 1.0.0
-
+-- // Services
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
-local SoundService = game:GetService("SoundService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local StarterGui = game:GetService("StarterGui")
-local UserInputService = game:FindService("UserInputService") or game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
 
+-- // Variables
 local LocalPlayer = Players.LocalPlayer
-while not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") do
-    wait()
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local mouse = LocalPlayer:GetMouse()
+local HttpEnabled = syn and syn.request or http_request or http and http.request or request
+
+-- // UI Library (Kavo UI)
+local KavoUi = loadstring(game:HttpGet("https://raw.githubusercontent.com/Fantemil/Trenglehub/main/Library/kavo-ui.lua"))()
+local Window = KavoUi.CreateLib("mush1cora", "DarkTheme")
+
+-- // Create Main Tabs
+local ScriptsTab = Window:NewTab("Scripts")
+local AboutTab = Window:NewTab("Sobre")
+local SettingsTab = Window:NewTab("Configurações")
+
+-- // Sections
+local ScriptsSection = ScriptsTab:NewSection("Scripts Disponíveis")
+local AboutSection = AboutTab:NewSection("Bem-vindo(a)!")
+local InfoSection = AboutTab:NewSection("Informações do Projeto")
+local SettingsSection = SettingsTab:NewSection("Configurações")
+
+-- // Welcome Message Logic
+local function getGreeting()
+    local hour = tonumber(os.date("%H"))
+    if hour >= 5 and hour < 12 then
+        return "Bom dia"
+    elseif hour >= 12 and hour < 18 then
+        return "Boa tarde"
+    else
+        return "Boa noite"
+    end
 end
 
--- // Configurações
-getgenv().Mush1CoraConfig = {
-    Version = "1.0.0",
-    Changelog = "• Primeira versão lançada\n• Todos os scripts integrados\n• Interface terminal aprimorada\n• Sistema de avatar e saudação",
-    ScriptsCount = 5,
-    OfficialSite = "https://henry1911.fwh.is/mush1cora",
-    GitHubRepo = "https://github.com/henry1911/mush1cora", -- opcional
-    WarnMessage = "Você está prestes a usar uma script hub. Isso pode violar as diretrizes do Roblox. Prossiga por sua conta e risco.",
-    Scripts = {
-        { Name = "Soluna", Script = 'https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua' },
-        { Name = "XXXOMER12345678", Script = 'https://pastebin.com/raw/LCmR8qkj' },
-        { Name = "FHub", Script = 'https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua' },
-        { Name = "IceHub", Script = 'https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua' },
-        { Name = "Sander XY (Deluxe Bypass)", Script = 'https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid' }
+local function getAvatarThumbnail(userId)
+    local success, result = pcall(function()
+        return game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+    if success then
+        return result
+    else
+        return nil -- Return nil if failed to get thumbnail
+    end
+end
+
+-- // About Tab Content
+local greetingLabel = AboutSection:NewLabel(getGreeting() .. ", " .. LocalPlayer.DisplayName .. "!")
+local avatarImageLabel = Instance.new("ImageLabel")
+avatarImageLabel.Size = UDim2.new(0, 100, 0, 100)
+avatarImageLabel.Position = UDim2.new(0.5, -50, 0, 50)
+avatarImageLabel.BackgroundTransparency = 1
+avatarImageLabel.Image = getAvatarThumbnail(LocalPlayer.UserId) or "rbxthumb://type=AvatarHeadShot&id="..LocalPlayer.UserId.."&w=420&h=420"
+avatarImageLabel.Parent = AboutSection.SectionFrame
+
+local infoTextLabel = InfoSection:NewLabel("Versão: 1.0.0")
+local scriptCountLabel = InfoSection:NewLabel("Scripts disponíveis: Carregando...")
+local updatesLabel = InfoSection:NewLabel("Verificar atualizações: https://henry1911.ct.ws/mush1cora")
+local descriptionLabel = InfoSection:NewLabel("Hub de scripts para Brookhaven RP.")
+
+-- // Changelog Section
+local ChangelogSection = AboutTab:NewSection("Changelog - Versão 1.0.0")
+ChangelogSection:NewLabel("- Versão inicial da mush1cora Hub.")
+ChangelogSection:NewLabel("- Adicionados vários scripts para Brookhaven RP.")
+
+-- // Settings Tab Content
+local ToggleUIButton = SettingsSection:NewButton("Alternar Visibilidade da GUI", "Esconde ou mostra a GUI", function()
+    KavoUi:ToggleUI()
+end)
+
+-- // Movable Toggle Button
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Mush1coraToggleButton"
+ScreenGui.Parent = game:GetService("CoreGui")
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 100, 0, 30)
+ToggleButton.Position = UDim2.new(0.5, -50, 0.9, 0)
+ToggleButton.Text = "Mostrar/Esconder"
+ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.ZIndex = 10
+ToggleButton.Parent = ScreenGui
+
+local UserInputService = game:GetService("UserInputService")
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    ToggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = ToggleButton.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ToggleButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    KavoUi:ToggleUI()
+end)
+
+-- // Script Execution Logic
+local scripts = {
+    {
+        name = "Soluna",
+        loadstring = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true))()'
+    },
+    {
+        name = "XXXOMER12345678",
+        loadstring = 'loadstring(game:HttpGet("https://pastebin.com/raw/LCmR8qkj"))()'
+    },
+    {
+        name = "FHub",
+        loadstring = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()'
+    },
+    {
+        name = "IceHub",
+        loadstring = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"))()'
+    },
+    {
+        name = "Sander XY (Bypass Deluxe)",
+        loadstring = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid"))()'
     }
 }
 
--- // Verifica se já está rodando
-if getgenv().Mush1CoraLoaded then
-    warn("Mush1Cora Hub já está carregada.")
-    return
-end
-getgenv().Mush1CoraLoaded = true
-
--- // Saudação com base no horário
-local function getSaudacao()
-    local hora = os.date("%H")
-    if hora < 6 then return "Boa madrugada" end
-    if hora < 12 then return "Bom dia" end
-    if hora < 18 then return "Boa tarde" end
-    return "Boa noite"
-end
-
--- // Carrega UI Library (Kavo UI ou Rayfield simulado)
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/Kavo%20UI%20Library.lua"))()
-local Window = Library.CreateLib("Mush1Cora Hub v" .. getgenv().Mush1CoraConfig.Version, "DarkTheme")
-
--- // Fonte de terminal
-local TerminalFont = Enum.Font.Code
-
--- // Som de Windows 95 (base64 para evitar dependência)
-local Windows95Sound = Instance.new("Sound")
-Windows95Sound.SoundId = "rbxassetid://160301849" -- Som de startup do Windows 95
-Windows95Sound.Parent = SoundService
-Windows95Sound.Volume = 1
-
--- // Janela de confirmação inicial
-local ConfirmFrame = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local Desc = Instance.new("TextLabel")
-local Warn = Instance.new("TextLabel")
-local Site = Instance.new("TextLabel")
-local ConfirmBtn = Instance.new("TextButton")
-local ExitBtn = Instance.new("TextButton")
-
-ConfirmFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ConfirmFrame.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
--- // Estilo da janela de confirmação
-Frame.Size = UDim2.new(0, 500, 0, 300)
-Frame.Position = UDim2.new(0.5, -250, 0.5, -150)
-Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-Frame.BorderSizePixel = 2
-Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
-Frame.Parent = ConfirmFrame
-
-Title.Text = "Mush1Cora Hub"
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Position = UDim2.new(0, 0, 0, 10)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(255, 0, 0)
-Title.Font = TerminalFont
-Title.TextSize = 24
-Title.Parent = Frame
-
-Desc.Text = "Você está prestes a iniciar a Mush1Cora Script Hub.\nEsta ferramenta é de uso educacional."
-Desc.Size = UDim2.new(1, -20, 0, 60)
-Desc.Position = UDim2.new(0, 10, 0, 60)
-Desc.BackgroundTransparency = 1
-Desc.TextColor3 = Color3.fromRGB(200, 200, 200)
-Desc.Font = TerminalFont
-Desc.TextSize = 14
-Desc.TextWrapped = true
-Desc.Parent = Frame
-
-Warn.Text = getgenv().Mush1CoraConfig.WarnMessage
-Warn.Size = UDim2.new(1, -20, 0, 40)
-Warn.Position = UDim2.new(0, 10, 0, 120)
-Warn.BackgroundTransparency = 1
-Warn.TextColor3 = Color3.fromRGB(255, 100, 100)
-Warn.Font = TerminalFont
-Warn.TextSize = 12
-Warn.TextWrapped = true
-Warn.Parent = Frame
-
-Site.Text = "Site oficial: " .. getgenv().Mush1CoraConfig.OfficialSite
-Site.Size = UDim2.new(1, -20, 0, 30)
-Site.Position = UDim2.new(0, 10, 0, 160)
-Site.BackgroundTransparency = 1
-Site.TextColor3 = Color3.fromRGB(0, 150, 255)
-Site.Font = TerminalFont
-Site.TextSize = 12
-Site.Parent = Frame
-
-ConfirmBtn.Text = "INICIAR HUB"
-ConfirmBtn.Size = UDim2.new(0, 200, 0, 40)
-ConfirmBtn.Position = UDim2.new(0.5, -205, 0, 220)
-ConfirmBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ConfirmBtn.BorderSizePixel = 1
-ConfirmBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
-ConfirmBtn.TextColor3 = Color3.fromRGB(0, 255, 0)
-ConfirmBtn.Font = TerminalFont
-ConfirmBtn.TextSize = 16
-ConfirmBtn.Parent = Frame
-
-ExitBtn.Text = "SAIR"
-ExitBtn.Size = UDim2.new(0, 200, 0, 40)
-ExitBtn.Position = UDim2.new(0.5, 5, 0, 220)
-ExitBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ExitBtn.BorderSizePixel = 1
-ExitBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
-ExitBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
-ExitBtn.Font = TerminalFont
-ExitBtn.TextSize = 16
-ExitBtn.Parent = Frame
-
--- // Eventos dos botões
-ConfirmBtn.MouseButton1Click:Connect(function()
-    Windows95Sound:Play()
-    wait(Windows95Sound.TimeLength + 0.5)
-    ConfirmFrame:Destroy()
-    spawn(function()
-        -- Inicia a hub principal
-        createMainHub()
-    end)
-end)
-
-ExitBtn.MouseButton1Click:Connect(function()
-    ConfirmFrame:Destroy()
-    warn("Usuário cancelou a execução da Mush1Cora Hub.")
-end)
-
--- // Função principal da Hub
-function createMainHub()
-    -- // Obtém avatar do usuário
-    local success, thumbnail = pcall(function()
-        return game.Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
-    end)
-    local avatarUrl = success and thumbnail or "rbxasset://textures/ui/GuiImagePlaceholder.png"
-
-    -- // Tabs
-    local TabSobre = Window:NewTab("Sobre")
-    local TabScripts = Window:NewTab("Scripts")
-    local TabChangelog = Window:NewTab("Changelog")
-
-    -- // === SEÇÃO SOBRE ===
-    local SobreSection = TabSobre:NewSection("Sobre a Mush1Cora Hub")
-
-    SobreSection:NewLabel(" ")
-    SobreSection:NewLabel(getSaudacao() .. ", " .. LocalPlayer.DisplayName .. "!")
-
-    -- // Avatar
-    local AvatarFrame = Instance.new("ImageLabel")
-    AvatarFrame.Size = UDim2.new(0, 64, 0, 64)
-    AvatarFrame.Position = UDim2.new(0.5, -32, 0, 0)
-    AvatarFrame.BackgroundTransparency = 1
-    AvatarFrame.Image = avatarUrl
-    AvatarFrame.BorderSizePixel = 2
-    AvatarFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
-    AvatarFrame.Parent = SobreSection:GetParentFrame()
-    SobreSection:UpdatePadding(80)
-
-    SobreSection:NewLabel(" ")
-    SobreSection:NewLabel("Versão: " .. getgenv().Mush1CoraConfig.Version)
-    SobreSection:NewLabel("Scripts Disponíveis: " .. getgenv().Mush1CoraConfig.ScriptsCount)
-    SobreSection:NewLabel("Site Oficial: " .. getgenv().Mush1CoraConfig.OfficialSite)
-    SobreSection:NewLabel("GitHub: " .. getgenv().Mush1CoraConfig.GitHubRepo)
-    SobreSection:NewLabel(" ")
-    SobreSection:NewLabel("Aviso: Atualizações são automáticas.")
-    SobreSection:NewLabel("Não é necessário mudar o link do script.")
-
-    -- // === SEÇÃO SCRIPTS ===
-    local ScriptsSection = TabScripts:NewSection("Scripts do Brookhaven")
-
-    for _, scriptData in ipairs(getgenv().Mush1CoraConfig.Scripts) do
-        ScriptsSection:NewButton(scriptData.Name, "Executar script", function()
-            spawn(function()
-                pcall(function()
-                    loadstring(game:HttpGet(scriptData.Script, true))()
-                    StarterGui:SetCore("ChatMakeSystemMessage", {
-                        Text = "[Mush1Cora] Script '" .. scriptData.Name .. "' carregado com sucesso!",
-                        Color = Color3.fromRGB(0, 255, 0),
-                        Font = TerminalFont,
-                        FontSize = 18
-                    })
-                end)
-            end)
-        end)
-    end
-
-    -- // === SEÇÃO CHANGELOG ===
-    local ChangelogSection = TabChangelog:NewSection("Changelog")
-    ChangelogSection:NewLabel("Última Atualização (v" .. getgenv().Mush1CoraConfig.Version .. "):")
-    for line in getgenv().Mush1CoraConfig.Changelog:gmatch("[^\r\n]+") do
-        ChangelogSection:NewLabel("• " .. line)
-    end
-
-    -- // === BOTÃO FLUTUANTE PARA TOGGLE ===
-    local FloatingButton = Instance.new("TextButton")
-    FloatingButton.Text = "☰"
-    FloatingButton.Size = UDim2.new(0, 40, 0, 40)
-    FloatingButton.Position = UDim2.new(0, 10, 0, 10)
-    FloatingButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    FloatingButton.BorderSizePixel = 1
-    FloatingButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
-    FloatingButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-    FloatingButton.Font = TerminalFont
-    FloatingButton.TextSize = 20
-    FloatingButton.ZIndex = 10
-    FloatingButton.Parent = game.Players.LocalPlayer.PlayerGui
-
-    FloatingButton.MouseButton1Click:Connect(function()
-        Library:ToggleUI()
-        FloatingButton.Text = Library:WindowIsOpen() and "☰" or "▶"
-    end)
-
-    -- // TopBar personalizado (opcional: se quiser mais controle)
-    local topBar = Window:GetFrame().Topbar
-    topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    topBar.Title.TextColor3 = Color3.fromRGB(255, 0, 0)
-    topBar.Title.Font = TerminalFont
-
-    -- // Aplicar fonte de terminal a todos os elementos
-    for _, obj in ipairs(Window:GetFrame():GetDescendants()) do
-        if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-            obj.Font = TerminalFont
-        end
-    end
-
-    -- // Notificação de boas-vindas
-    StarterGui:SetCore("ChatMakeSystemMessage", {
-        Text = "Bem-vindo à Mush1Cora Hub, " .. LocalPlayer.DisplayName .. "!",
-        Color = Color3.fromRGB(255, 50, 50),
-        Font = TerminalFont,
-        FontSize = 24
-    })
-
-    -- // Aviso no chat
-    task.delay(2, function()
-        StarterGui:SetCore("ChatMakeSystemMessage", {
-            Text = "Aviso: Esta hub é para fins educacionais. Use por sua conta e risco.",
-            Color = Color3.fromRGB(255, 150, 0),
-            Font = TerminalFont,
-            FontSize = 14
+-- // Add scripts to the GUI
+for _, scriptData in ipairs(scripts) do
+    ScriptsSection:NewButton(scriptData.name, "", function()
+        -- // Confirmation before execution
+        local Notification = game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Confirmação";
+            Text = "Tem certeza que deseja executar o script " .. scriptData.name .. "?";
+            Duration = 5;
+            Callback = function(buttonText)
+                if buttonText == "OK" then
+                    -- // Execute the script
+                    loadstring(scriptData.loadstring)()
+                end
+            end;
+            Button1 = "OK";
+            Button2 = "Cancelar";
         })
     end)
 end
 
--- // Carregar automaticamente a janela de confirmação
--- (já está sendo exibida no início)
+-- // Update Script Count (Example)
+spawn(function()
+    -- // Simulate fetching script count (replace with actual logic if needed)
+    wait(2) -- Simulate delay
+    scriptCountLabel:UpdateLabel("Scripts disponíveis: " .. #scripts)
+end)
+
+-- // Disclaimer GUI
+local DisclaimerGui = Instance.new("ScreenGui")
+DisclaimerGui.Name = "DisclaimerGui"
+DisclaimerGui.Parent = game:GetService("CoreGui")
+
+local DisclaimerFrame = Instance.new("Frame")
+DisclaimerFrame.Size = UDim2.new(0, 400, 0, 300)
+DisclaimerFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+DisclaimerFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DisclaimerFrame.BorderSizePixel = 0
+DisclaimerFrame.ZIndex = 20
+DisclaimerFrame.Parent = DisclaimerGui
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 0, 50)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "mush1cora Hub"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 24
+TitleLabel.ZIndex = 21
+TitleLabel.Parent = DisclaimerFrame
+
+local MessageLabel = Instance.new("TextLabel")
+MessageLabel.Size = UDim2.new(1, -20, 0, 180)
+MessageLabel.Position = UDim2.new(0, 10, 0, 60)
+MessageLabel.BackgroundTransparency = 1
+MessageLabel.Text = "Você está prestes a iniciar a hub do projeto mush1cora.\n\nAo iniciar, você assume a responsabilidade de correr risco de penalidades pela administração do Roblox.\n\nAviso: o único site do projeto é: henry1911.fwh.is/mush1cora"
+MessageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+MessageLabel.Font = Enum.Font.SourceSans
+MessageLabel.TextSize = 16
+MessageLabel.TextWrapped = true
+MessageLabel.TextXAlignment = Enum.TextXAlignment.Left
+MessageLabel.TextYAlignment = Enum.TextYAlignment.Top
+MessageLabel.ZIndex = 21
+MessageLabel.Parent = DisclaimerFrame
+
+local AcceptButton = Instance.new("TextButton")
+AcceptButton.Size = UDim2.new(0, 150, 0, 40)
+AcceptButton.Position = UDim2.new(0.5, -160, 1, -50)
+AcceptButton.Text = "Aceitar e Iniciar"
+AcceptButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+AcceptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AcceptButton.BorderSizePixel = 0
+AcceptButton.ZIndex = 21
+AcceptButton.Parent = DisclaimerFrame
+
+local DeclineButton = Instance.new("TextButton")
+DeclineButton.Size = UDim2.new(0, 150, 0, 40)
+DeclineButton.Position = UDim2.new(0.5, 10, 1, -50)
+DeclineButton.Text = "Recusar"
+DeclineButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+DeclineButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeclineButton.BorderSizePixel = 0
+DeclineButton.ZIndex = 21
+DeclineButton.Parent = DisclaimerFrame
+
+-- // Button Functions
+AcceptButton.MouseButton1Click:Connect(function()
+    -- // Destroy Disclaimer GUI and show main GUI
+    DisclaimerGui:Destroy()
+    -- // The main GUI (Window) is already created but hidden by default in Kavo UI
+    -- // You might need to call a function to show it, or it might appear automatically
+    -- // depending on the Kavo UI implementation. Let's assume it appears.
+    -- // If it doesn't appear, you might need to call KavoUi:ToggleUI() or similar.
+end)
+
+DeclineButton.MouseButton1Click:Connect(function()
+    -- // Close the game or do nothing
+    game:Shutdown() -- Or simply hide the GUIs
+    -- game:GetService("CoreGui"):FindFirstChild("KavoUi"):Destroy() -- Example of hiding main GUI
+    -- DisclaimerGui:Destroy()
+end)
+
+-- // Hide the main Kavo UI initially until accepted
+-- // This part depends on the Kavo UI implementation.
+-- // If there's a function to hide it, call it here.
+-- // For now, let's assume the disclaimer covers it or it starts hidden.
+-- // KavoUi:Hide() -- Hypothetical function
