@@ -42,40 +42,29 @@ local function getGreeting()
     end
 end
 
-local function getAvatarThumbnail(userId)
-    local success, result = pcall(function()
-        return game:GetService("Players"):GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
-    end)
-    if success and result then
-        return result
-    else
-        -- Return a default image or rbxthumb link if failed
-        return "rbxthumb://type=AvatarHeadShot&id="..tostring(userId).."&w=420&h=420"
-    end
-end
-
 -- // About Tab Content
-local greetingLabel = AboutSection:NewLabel(getGreeting() .. ", " .. LocalPlayer.DisplayName .. "!")
+AboutSection:NewLabel(getGreeting() .. ", " .. LocalPlayer.DisplayName .. "!")
 
--- Avatar Image (Add it to the section's parent frame)
-local avatarImageLabel = Instance.new("ImageLabel")
-avatarImageLabel.Name = "UserAvatar"
-avatarImageLabel.Size = UDim2.new(0, 100, 0, 100)
-avatarImageLabel.Position = UDim2.new(0, 10, 0, 10) -- Adjust position as needed within the section
-avatarImageLabel.BackgroundTransparency = 1
-avatarImageLabel.Image = getAvatarThumbnail(LocalPlayer.UserId)
-avatarImageLabel.Parent = AboutSection.SectionFrame -- Add directly to the section's frame
+-- Botão para o site
+local websiteButton = AboutSection:NewButton("Visitar Site Oficial", "Clique para copiar o link do site", function()
+    local website = "https://henry1911.ct.ws/mush1cora"
+    setclipboard(website)
+    StarterGui:SetCore("SendNotification", {
+        Title = "Link copiado!",
+        Text = "O link do site foi copiado para sua área de transferência: "..website,
+        Duration = 5
+    })
+end)
 
 -- Info Text Labels
-local infoTextLabel = InfoSection:NewLabel("Versão: 1.0.0")
-local scriptCountLabel = InfoSection:NewLabel("Scripts disponíveis: Carregando...")
-local updatesLabel = InfoSection:NewLabel("Verificar atualizações: https://henry1911.ct.ws/mush1cora")
-local descriptionLabel = InfoSection:NewLabel("Hub de scripts para Brookhaven RP.")
-local updatesNoteLabel = InfoSection:NewLabel("As atualizações são diretas, não é necessário mudar o link do script.")
+InfoSection:NewLabel("Versão: 1.0.0")
+InfoSection:NewLabel("Scripts disponíveis: 5")
+InfoSection:NewLabel("Descrição: Hub de scripts para Brookhaven RP")
 
--- // Changelog Section
-ChangelogSection:NewLabel("- Versão inicial da mush1cora Hub.")
-ChangelogSection:NewLabel("- Adicionados vários scripts para Brookhaven RP.")
+-- Changelog
+ChangelogSection:NewLabel("- Versão inicial da mush1cora Hub")
+ChangelogSection:NewLabel("- Scripts otimizados para Brookhaven RP")
+ChangelogSection:NewLabel("- Interface melhorada")
 
 -- // Settings Tab Content
 local ToggleUIButton = SettingsSection:NewButton("Alternar Visibilidade da GUI", "Esconde ou mostra a GUI", function()
@@ -86,12 +75,12 @@ end)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Mush1coraToggleButton"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.Parent = CoreGui
 
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 120, 0, 30)
-ToggleButton.Position = UDim2.new(0.5, -60, 0.9, 0) -- Centered horizontally, bottom
+ToggleButton.Position = UDim2.new(0.5, -60, 0.9, 0)
 ToggleButton.Text = "Mostrar/Esconder Hub"
 ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -99,11 +88,8 @@ ToggleButton.BorderSizePixel = 0
 ToggleButton.ZIndex = 10
 ToggleButton.Parent = ScreenGui
 
--- // Make Toggle Button Draggable
-local dragging
-local dragInput
-local dragStart
-local startPos
+-- Make Toggle Button Draggable
+local dragging, dragInput, dragStart, startPos
 
 local function update(input)
     local delta = input.Position - dragStart
@@ -111,11 +97,11 @@ local function update(input)
 end
 
 ToggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
         startPos = ToggleButton.Position
-
+        
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
@@ -125,7 +111,7 @@ ToggleButton.InputBegan:Connect(function(input)
 end)
 
 ToggleButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
@@ -140,120 +126,132 @@ ToggleButton.MouseButton1Click:Connect(function()
     KavoUi:ToggleUI()
 end)
 
--- // Make Main Hub Window Draggable
--- Find the main Kavo UI ScreenGui and the main frame
-spawn(function()
-    wait(1) -- Wait a bit for the UI to be fully created
-    local kavoScreenGui = CoreGui:FindFirstChild("kavo-ui-library")
-    if kavoScreenGui then
-        local mainFrame = kavoScreenGui:FindFirstChild("Main")
-        if mainFrame and mainFrame:FindFirstChild("Bar") then
-            local dragBar = mainFrame.Bar
-
-            local mainDragging
-            local mainDragInput
-            local mainDragStart
-            local mainStartPos
-
-            local function updateMain(input)
-                local delta = input.Position - mainDragStart
-                mainFrame.Position = UDim2.new(mainStartPos.X.Scale, mainStartPos.X.Offset + delta.X, mainStartPos.Y.Scale, mainStartPos.Y.Offset + delta.Y)
-            end
-
-            dragBar.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    mainDragging = true
-                    mainDragStart = input.Position
-                    mainStartPos = mainFrame.Position
-
-                    input.Changed:Connect(function()
-                        if input.UserInputState == Enum.UserInputState.End then
-                            mainDragging = false
-                        end
-                    end)
-                end
-            end)
-
-            dragBar.InputChanged:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                    mainDragInput = input
-                end
-            end)
-
-            UserInputService.InputChanged:Connect(function(input)
-                if input == mainDragInput and mainDragging then
-                    updateMain(input)
-                end
-            end)
-        end
-    end
-end)
-
 -- // Script Execution Logic
 local scripts = {
     {
         name = "Soluna",
+        description = "Script avançado para Brookhaven",
         loadstring_code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true))()'
     },
     {
         name = "XXXOMER12345678",
+        description = "Bypass e funções úteis",
         loadstring_code = 'loadstring(game:HttpGet("https://pastebin.com/raw/LCmR8qkj"))()'
     },
     {
         name = "FHub",
+        description = "Hub completo para Brookhaven",
         loadstring_code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()'
     },
     {
         name = "IceHub",
+        description = "Script leve e eficiente",
         loadstring_code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"))()'
     },
     {
         name = "Sander XY (Bypass Deluxe)",
+        description = "Bypass avançado para Brookhaven",
         loadstring_code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid"))()'
     }
 }
 
--- // Add scripts to the GUI
+-- // Add scripts to the GUI with confirmation
 for _, scriptData in ipairs(scripts) do
-    ScriptsSection:NewButton(scriptData.name, "", function()
-        -- // Confirmation before execution (using native Roblox prompt or Kavo notification if available)
-        -- Using a simple Spawn to prevent blocking the UI thread during potential long load times
-        spawn(function()
-            local success, result = pcall(function()
-                -- Attempt to use SetCore notification if possible
-                StarterGui:SetCore("SendNotification", {
-                    Title = "Confirmar Execução";
-                    Text = "Executar o script " .. scriptData.name .. "?";
-                    Icon = "";
-                    Duration = 5;
-                    Callback = function(buttonText)
-                        if buttonText == "OK" or buttonText == 1 then -- OK button
-                            -- // Execute the script
-                            loadstring(scriptData.loadstring_code)()
-                        end
-                    end;
-                    Button1 = "OK";
-                    Button2 = "Cancelar";
-                })
-            end)
-
-            if not success then
-                -- Fallback if SetCore fails (e.g., not supported by executor)
-                -- Just execute directly or use a print statement for confirmation in console
-                -- For now, let's just execute with a warning print
-                warn("Não foi possível mostrar notificação de confirmação. Executando script diretamente: " .. scriptData.name)
-                loadstring(scriptData.loadstring_code)()
-            end
+    ScriptsSection:NewButton(scriptData.name, scriptData.description, function()
+        local confirmation = Instance.new("ScreenGui")
+        confirmation.Name = "ScriptConfirmation"
+        confirmation.Parent = CoreGui
+        
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 300, 0, 150)
+        frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+        frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        frame.BorderSizePixel = 0
+        frame.Parent = confirmation
+        
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Size = UDim2.new(1, 0, 0.6, 0)
+        textLabel.Position = UDim2.new(0, 0, 0, 0)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Text = "Deseja executar o script:\n"..scriptData.name.."?"
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        textLabel.TextWrapped = true
+        textLabel.Parent = frame
+        
+        local yesButton = Instance.new("TextButton")
+        yesButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+        yesButton.Position = UDim2.new(0.05, 0, 0.65, 0)
+        yesButton.Text = "Sim"
+        yesButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+        yesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        yesButton.Parent = frame
+        
+        local noButton = Instance.new("TextButton")
+        noButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+        noButton.Position = UDim2.new(0.55, 0, 0.65, 0)
+        noButton.Text = "Não"
+        noButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+        noButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        noButton.Parent = frame
+        
+        yesButton.MouseButton1Click:Connect(function()
+            confirmation:Destroy()
+            loadstring(scriptData.loadstring_code)()
+        end)
+        
+        noButton.MouseButton1Click:Connect(function()
+            confirmation:Destroy()
         end)
     end)
 end
 
--- // Update Script Count
-spawn(function()
-    -- // Simulate fetching script count (replace with actual logic if needed)
-    wait(2) -- Simulate delay
-    scriptCountLabel:UpdateLabel("Scripts disponíveis: " .. #scripts)
-end)
+-- // Make the main window movable
+local kavoScreenGui = CoreGui:FindFirstChild("kavo-ui-library")
+if kavoScreenGui then
+    local mainFrame = kavoScreenGui:FindFirstChild("Main")
+    if mainFrame then
+        local dragBar = mainFrame:FindFirstChild("Bar")
+        
+        if dragBar then
+            local dragging, dragInput, dragStart, startPos
+            
+            local function update(input)
+                local delta = input.Position - dragStart
+                mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+            
+            dragBar.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = true
+                    dragStart = input.Position
+                    startPos = mainFrame.Position
+                    
+                    input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            dragging = false
+                        end
+                    end)
+                end
+            end)
+            
+            dragBar.InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    dragInput = input
+                end
+            end)
+            
+            UserInputService.InputChanged:Connect(function(input)
+                if input == dragInput and dragging then
+                    update(input)
+                end
+            end)
+        end
+    end
+end
 
--- // Ensure the main hub GUI is visible after loading
--- Kavo UI usually shows by default after creation.
+-- Notification when loaded
+StarterGui:SetCore("SendNotification", {
+    Title = "mush1cora Hub",
+    Text = "Hub carregado com sucesso!",
+    Duration = 5
+})
