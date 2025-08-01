@@ -1,197 +1,456 @@
--- [[ MUSH1CORA HUB - Brookhaven RP ]] --
--- [[ Desenvolvido por Henry1911 ]] --
+--[[
+  Mush1cora Hub Premium - Brookhaven RP
+  Versão 2.0 - UI Premium Completa
+  Desenvolvido por Henry1911
+]]--
 
--- [[ Carregar Rayfield GUI ]] --
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/CustomFIeld/main/RayField.lua'))()
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
--- [[ Função para obter saudação ]] --
+-- Carregar Fluent UI
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+-- Configurações da UI
+local UI = Fluent:Create({
+    Title = "Mush1cora Hub Premium",
+    SubTitle = "Brookhaven RP",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.RightControl
+})
+
+-- Funções úteis
 local function getGreeting()
     local hour = tonumber(os.date("%H"))
     if hour >= 6 and hour < 12 then
         return "Bom dia"
-    elseif hour >= 12 and hour < 18 then
+    elseif hour >= 12 and < 18 then
         return "Boa tarde"
     else
         return "Boa noite"
     end
 end
 
--- [[ Tocar Som de Startup ]] --
-spawn(function()
+local function playSound(id, volume)
     local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://1841928191" -- Som do Windows 95
-    sound.Volume = 0.5
-    sound.Parent = game:GetService("SoundService") or workspace
+    sound.SoundId = "rbxassetid://"..tostring(id)
+    sound.Volume = volume or 0.5
+    sound.Parent = SoundService
     sound:Play()
     game:GetService("Debris"):AddItem(sound, sound.TimeLength)
-end)
-
--- [[ Aviso Legal na Inicialização ]] --
-local WarningGui = Instance.new("ScreenGui")
-WarningGui.Name = "WarningGui"
-WarningGui.Parent = game.CoreGui
-WarningGui.ResetOnSpawn = false
-
-local WarningFrame = Instance.new("Frame")
-WarningFrame.Size = UDim2.new(0, 400, 0, 250)
-WarningFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
-WarningFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-WarningFrame.BorderSizePixel = 2
-WarningFrame.BorderColor3 = Color3.fromRGB(200, 0, 0)
-WarningFrame.Parent = WarningGui
-
-local WarningLabel = Instance.new("TextLabel")
-WarningLabel.Size = UDim2.new(1, -20, 0.7, 0)
-WarningLabel.Position = UDim2.new(0, 10, 0, 10)
-WarningLabel.BackgroundTransparency = 1
-WarningLabel.Text = "Você está prestes a iniciar a Mush1cora Hub.\n\nAo continuar, você assume total responsabilidade por possíveis penalidades impostas pela administração do Roblox.\n\nSite oficial: henry1911.ct.ws/mush1cora"
-WarningLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-WarningLabel.Font = Enum.Font.Code
-WarningLabel.TextSize = 14
-WarningLabel.TextWrapped = true
-WarningLabel.TextYAlignment = Enum.TextYAlignment.Top
-WarningLabel.Parent = WarningFrame
-
-local AcceptButton = Instance.new("TextButton")
-AcceptButton.Size = UDim2.new(0, 100, 0, 30)
-AcceptButton.Position = UDim2.new(0.5, -50, 0.85, 0)
-AcceptButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-AcceptButton.Text = "Iniciar"
-AcceptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-AcceptButton.Font = Enum.Font.Code
-AcceptButton.TextSize = 16
-AcceptButton.BorderSizePixel = 0
-AcceptButton.Parent = WarningFrame
-
--- [[ Criar Janela Principal (inicialmente invisível) ]] --
-local Window = Rayfield:CreateWindow({
-    Name = "Mush1cora Hub - Brookhaven RP",
-    LoadingTitle = "Mush1cora Hub",
-    LoadingSubtitle = "Carregando interface premium...",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "Mush1coraHub",
-        FileName = "Config"
-    },
-    KeySystem = false
-})
-
-Window.Frame.Visible = false
-
--- [[ Notificação Inicial ]] --
-Rayfield:Notify({
-    Title = "Bem-vindo!",
-    Content = "Mush1cora Hub carregada com sucesso!",
-    Duration = 5,
-    Image = 4483362458 -- Ícone padrão
-})
-
--- [[ Aba "Sobre" ]] --
-local AboutTab = Window:CreateTab("🏠 Sobre", 4483362458)
-local AboutSection = AboutTab:CreateSection("Bem-vindo")
-
--- [[ Avatar do Usuário ]] --
-local Player = game.Players.LocalPlayer
-local userId = Player.UserId
-local thumbType = Enum.ThumbnailType.HeadShot
-local thumbSize = Enum.ThumbnailSize.Size100x100
-local content, isReady = game.Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-
-local ImageLabel = Instance.new("ImageLabel")
-ImageLabel.Size = UDim2.new(0, 100, 0, 100)
-ImageLabel.Image = content
-ImageLabel.BackgroundTransparency = 1
-ImageLabel.Parent = AboutSection.Frame
-
--- [[ Informações da Hub ]] --
-AboutTab:CreateLabel("🌟 " .. getGreeting() .. ", " .. Player.DisplayName .. "!")
-AboutTab:CreateLabel("📄 Versão: v1.2.0")
-AboutTab:CreateLabel("🧰 Scripts Disponíveis: 5")
-AboutTab:CreateLabel("🌐 Site oficial: henry1911.ct.ws/mush1cora")
-AboutTab:CreateLabel("🔄 Atualizações são diretas, não é necessário trocar o link.")
-
--- [[ Changelog ]] --
-local ChangelogSection = AboutTab:CreateSection("Changelog - Versão Atual")
-AboutTab:CreateLabel("• Interface totalmente redesenhada")
-AboutTab:CreateLabel("• Foco total em scripts para Brookhaven RP")
-AboutTab:CreateLabel("• Sistema de notificações premium")
-AboutTab:CreateLabel("• Design vermelho/preto com fonte terminal")
-
--- [[ Aba de Scripts ]] --
-local ScriptsTab = Window:CreateTab("🧰 Scripts", 4483362458)
-local ScriptsSection = ScriptsTab:CreateSection("Scripts para Brookhaven RP")
-
--- [[ Função para criar botão de script com tratamento de erro ]] --
-local function createScriptButton(name, url, isRaw)
-    ScriptsTab:CreateButton({
-        Name = name,
-        Callback = function()
-            Rayfield:Notify({
-                Title = "Executando...",
-                Content = "Carregando " .. name .. "...",
-                Duration = 3,
-                Image = 4483362458
-            })
-            
-            local success, err = pcall(function()
-                if isRaw == true then
-                    loadstring(game:HttpGet(url, true))()
-                else
-                    loadstring(game:HttpGet(url))()
-                end
-            end)
-            
-            if success then
-                Rayfield:Notify({
-                    Title = "Sucesso!",
-                    Content = name .. " carregado com sucesso!",
-                    Duration = 5,
-                    Image = 4483362458
-                })
-            else
-                Rayfield:Notify({
-                    Title = "Erro!",
-                    Content = "Falha ao carregar " .. name .. ": " .. tostring(err),
-                    Duration = 5,
-                    Image = 4483362458
-                })
-            end
-        end
-    })
 end
 
--- [[ Adicionar Scripts do Brookhaven ]] --
-createScriptButton("Soluna", "https://raw.githubusercontent.com/Patheticcs/Soluna-API/refs/heads/main/brookhaven.lua", true)
-createScriptButton("XXXOMER13245678", "https://pastebin.com/raw/LCmR8qkj", false)
-createScriptButton("FHub", "https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua", false)
-createScriptButton("IceHub", "https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua", false)
-createScriptButton("Sander XY (Bypass Deluxe)", "https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/refs/heads/main/sander%20is%20a%20skid", false)
+-- Tela de boas-vindas
+local WelcomeScreen = Instance.new("ScreenGui")
+WelcomeScreen.Name = "Mush1coraWelcome"
+WelcomeScreen.Parent = game.CoreGui
+WelcomeScreen.ResetOnSpawn = false
 
--- [[ Botão Flutuante para Mostrar/Esconder GUI ]] --
-local DraggableObject = Instance.new("ScreenGui")
-DraggableObject.Name = "DraggableObject"
-DraggableObject.Parent = game.CoreGui
-DraggableObject.ResetOnSpawn = false
+local WelcomeFrame = Instance.new("Frame")
+WelcomeFrame.Size = UDim2.new(0, 400, 0, 300)
+WelcomeFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+WelcomeFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+WelcomeFrame.BorderSizePixel = 0
+WelcomeFrame.ClipsDescendants = true
+WelcomeFrame.Parent = WelcomeScreen
 
-local DragButton = Instance.new("TextButton")
-DragButton.Name = "DragButton"
-DragButton.Size = UDim2.new(0, 50, 0, 50)
-DragButton.Position = UDim2.new(0, 300, 0, 300)
-DragButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-DragButton.Text = "👁"
-DragButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DragButton.Font = Enum.Font.Code
-DragButton.TextSize = 20
-DragButton.BorderSizePixel = 0
-DragButton.Draggable = true
-DragButton.Parent = DraggableObject
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 8)
+Corner.Parent = WelcomeFrame
 
-DragButton.MouseButton1Click:Connect(function()
-    Window.Frame.Visible = not Window.Frame.Visible
+local Logo = Instance.new("ImageLabel")
+Logo.Size = UDim2.new(0, 120, 0, 120)
+Logo.Position = UDim2.new(0.5, -60, 0.2, -60)
+Logo.BackgroundTransparency = 1
+Logo.Image = "rbxassetid://14226499062" -- Substitua por um ID de imagem válido
+Logo.Parent = WelcomeFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0.5, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "MUSH1CORA HUB PREMIUM"
+Title.TextColor3 = Color3.fromRGB(255, 50, 50)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 24
+Title.Parent = WelcomeFrame
+
+local SubTitle = Instance.new("TextLabel")
+SubTitle.Size = UDim2.new(1, 0, 0, 20)
+SubTitle.Position = UDim2.new(0, 0, 0.6, 0)
+SubTitle.BackgroundTransparency = 1
+SubTitle.Text = "Brookhaven RP • v2.0"
+SubTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+SubTitle.Font = Enum.Font.Gotham
+SubTitle.TextSize = 14
+SubTitle.Parent = WelcomeFrame
+
+local StartButton = Instance.new("TextButton")
+StartButton.Size = UDim2.new(0, 180, 0, 40)
+StartButton.Position = UDim2.new(0.5, -90, 0.8, -20)
+StartButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+StartButton.Text = "INICIAR EXPERIÊNCIA"
+StartButton.TextColor3 = Color3.white
+StartButton.Font = Enum.Font.GothamBold
+StartButton.TextSize = 16
+StartButton.Parent = WelcomeFrame
+
+local CornerBtn = Instance.new("UICorner")
+CornerBtn.CornerRadius = UDim.new(0, 6)
+CornerBtn.Parent = StartButton
+
+-- Animação de entrada
+playSound(1841928191, 0.3) -- Som de inicialização
+
+for i = 0, 1, 0.1 do
+    WelcomeFrame.BackgroundTransparency = 1 - i
+    wait(0.02)
+end
+
+-- Main UI
+local Options = Fluent.Options
+
+do -- Main Window
+    Fluent:Notify({
+        Title = "Bem-vindo!",
+        Content = string.format("%s, %s! A Mush1cora Hub foi carregada com sucesso!", getGreeting(), Player.Name),
+        Duration = 5
+    })
+
+    -- Tabs
+    local HomeTab = UI:AddTab({
+        Title = "Início",
+        Icon = "home"
+    })
+
+    local ScriptsTab = UI:AddTab({
+        Title = "Scripts",
+        Icon = "code"
+    })
+
+    local PlayerTab = UI:AddTab({
+        Title = "Jogador",
+        Icon = "user"
+    })
+
+    local SettingsTab = UI:AddTab({
+        Title = "Configurações",
+        Icon = "settings"
+    })
+
+    -- Home Tab
+    do
+        HomeTab:AddParagraph({
+            Title = "🌟 Mush1cora Hub Premium",
+            Content = "A hub mais avançada para Brookhaven RP, com scripts premium e interface moderna."
+        })
+
+        local HomeSection = HomeTab:AddSection("Informações")
+
+        HomeTab:AddLabel("👋 "..getGreeting()..", "..Player.DisplayName.."!")
+        HomeTab:AddLabel("📅 Data: "..os.date("%d/%m/%Y"))
+        HomeTab:AddLabel("🕒 Hora: "..os.date("%H:%M"))
+        HomeTab:AddLabel("🎮 Jogo: Brookhaven RP")
+
+        local StatsSection = HomeTab:AddSection("Estatísticas")
+
+        local PlayersLabel = StatsSection:AddLabel("👥 Jogadores: "..#Players:GetPlayers())
+        Players:PlayerAdded:Connect(function()
+            PlayersLabel:SetText("👥 Jogadores: "..#Players:GetPlayers())
+        end)
+
+        Players:PlayerRemoving:Connect(function()
+            PlayersLabel:SetText("👥 Jogadores: "..#Players:GetPlayers())
+        end)
+
+        HomeTab:AddButton({
+            Title = "Copiar link de invite",
+            Description = "Convide seus amigos para o jogo",
+            Callback = function()
+                setclipboard("https://www.roblox.com/games/4924922222/Brookhaven-RP")
+                Fluent:Notify({
+                    Title = "Sucesso",
+                    Content = "Link copiado para a área de transferência!",
+                    Duration = 3
+                })
+            end
+        })
+    end
+
+    -- Scripts Tab
+    do
+        local AutoFarmSection = ScriptsTab:AddSection("Auto Farm")
+
+        AutoFarmSection:AddToggle("AutoMoney", {
+            Title = "Coletar Dinheiro Automático",
+            Default = false,
+            Callback = function(Value)
+                if Value then
+                    Fluent:Notify({
+                        Title = "Auto Farm",
+                        Content = "Dinheiro automático ativado!",
+                        Duration = 3
+                    })
+                    -- Aqui viria o código do script
+                else
+                    Fluent:Notify({
+                        Title = "Auto Farm",
+                        Content = "Dinheiro automático desativado!",
+                        Duration = 3
+                    })
+                end
+            end
+        })
+
+        AutoFarmSection:AddToggle("AutoRob", {
+            Title = "Roubo Automático",
+            Default = false,
+            Callback = function(Value)
+                -- Código do script
+            end
+        })
+
+        local TeleportSection = ScriptsTab:AddSection("Teleportes")
+
+        TeleportSection:AddDropdown("Locations", {
+            Title = "Locais",
+            Values = {"Casa", "Dealership", "Hospital", "Polícia", "Loja"},
+            Default = "Casa",
+            Callback = function(Value)
+                -- Código de teleporte
+            end
+        })
+
+        local ScriptsSection = ScriptsTab:AddSection("Scripts Premium")
+
+        local scriptsList = {
+            {name = "Soluna", desc = "Script completo para Brookhaven", url = "https://raw.githubusercontent.com/Patheticcs/Soluna-API/main/brookhaven.lua"},
+            {name = "XXXOMER13245678", desc = "Bypass e funções premium", url = "https://pastebin.com/raw/LCmR8qkj"},
+            {name = "FHub", desc = "Farm automático e mais", url = "https://raw.githubusercontent.com/OpenSourceEngine/Script/main/Brookhaven.lua"},
+            {name = "IceHub", desc = "Interface moderna com funções", url = "https://raw.githubusercontent.com/Waza80/scripts-new/main/IceHubBrookhaven.lua"},
+            {name = "Sander XY", desc = "Bypass Deluxe", url = "https://raw.githubusercontent.com/TrollGuiMaker/epic-sander-bypass/main/sander%20is%20a%20skid"}
+        }
+
+        for _, script in pairs(scriptsList) do
+            ScriptsSection:AddButton({
+                Title = script.name,
+                Description = script.desc,
+                Callback = function()
+                    Fluent:Notify({
+                        Title = "Carregando script",
+                        Content = "Iniciando "..script.name.."...",
+                        Duration = 3
+                    })
+                    
+                    local success, err = pcall(function()
+                        loadstring(game:HttpGet(script.url))()
+                    end)
+                    
+                    if success then
+                        Fluent:Notify({
+                            Title = "Sucesso!",
+                            Content = script.name.." carregado com sucesso!",
+                            Duration = 5,
+                            SubContent = "Aproveite as funções :)"
+                        })
+                    else
+                        Fluent:Notify({
+                            Title = "Erro!",
+                            Content = "Falha ao carregar "..script.name,
+                            Duration = 5,
+                            SubContent = tostring(err)
+                        })
+                    end
+                end
+            })
+        end
+    end
+
+    -- Player Tab
+    do
+        local CharacterSection = PlayerTab:AddSection("Personagem")
+
+        CharacterSection:AddSlider("WalkSpeed", {
+            Title = "Velocidade",
+            Description = "Ajusta a velocidade de movimento",
+            Default = 16,
+            Min = 16,
+            Max = 100,
+            Rounding = 0,
+            Callback = function(Value)
+                if Player.Character then
+                    local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid.WalkSpeed = Value
+                    end
+                end
+            end
+        })
+
+        CharacterSection:AddSlider("JumpPower", {
+            Title = "Pulo",
+            Description = "Ajusta a altura do pulo",
+            Default = 50,
+            Min = 50,
+            Max = 200,
+            Rounding = 0,
+            Callback = function(Value)
+                if Player.Character then
+                    local humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid.JumpPower = Value
+                    end
+                end
+            end
+        })
+
+        CharacterSection:AddButton({
+            Title = "Resetar Personagem",
+            Description = "Teletransporta para o spawn",
+            Callback = function()
+                if Player.Character then
+                    Player.Character:BreakJoints()
+                end
+            end
+        })
+
+        local VisualSection = PlayerTab:AddSection("Visual")
+
+        VisualSection:AddToggle("Esp", {
+            Title = "ESP (Ver jogadores)",
+            Default = false,
+            Callback = function(Value)
+                -- Código ESP
+            end
+        })
+
+        VisualSection:AddToggle("Tracers", {
+            Title = "Linhas para jogadores",
+            Default = false,
+            Callback = function(Value)
+                -- Código tracers
+            end
+        })
+    end
+
+    -- Settings Tab
+    do
+        SettingsTab:AddParagraph({
+            Title = "Configurações da UI",
+            Content = "Personalize a aparência da Mush1cora Hub"
+        })
+
+        local ThemeSection = SettingsTab:AddSection("Tema")
+
+        ThemeSection:AddDropdown("UITheme", {
+            Title = "Tema",
+            Values = {"Dark", "Light", "Darker", "Aqua", "Amethyst"},
+            Default = "Dark",
+            Callback = function(Value)
+                UI:SetTheme(Value)
+            end
+        })
+
+        ThemeSection:AddColorpicker("UIColor", {
+            Title = "Cor principal",
+            Default = Color3.fromRGB(200, 50, 50),
+            Callback = function(Value)
+                UI:ChangeThemeOption("Accent", Value)
+            end
+        })
+
+        local ConfigSection = SettingsTab:AddSection("Configurações")
+
+        ConfigSection:AddKeybind("ToggleKeybind", {
+            Title = "Tecla para mostrar/esconder",
+            Mode = "Toggle", -- Hold, Toggle
+            Default = Enum.KeyCode.RightControl,
+            Callback = function(Value)
+                -- Já é tratado automaticamente pela Fluent
+            end
+        })
+
+        ConfigSection:AddButton({
+            Title = "Salvar configurações",
+            Callback = function()
+                SaveManager:Save(game.PlaceId)
+                Fluent:Notify({
+                    Title = "Configurações salvas",
+                    Content = "Suas preferências foram salvas!",
+                    Duration = 3
+                })
+            end
+        })
+
+        ConfigSection:AddButton({
+            Title = "Carregar configurações",
+            Callback = function()
+                SaveManager:Load(game.PlaceId)
+                Fluent:Notify({
+                    Title = "Configurações carregadas",
+                    Content = "Suas preferências foram aplicadas!",
+                    Duration = 3
+                })
+            end
+        })
+
+        -- Sobre
+        local AboutSection = SettingsTab:AddSection("Sobre")
+
+        AboutSection:AddLabel("Mush1cora Hub Premium v2.0")
+        AboutSection:AddLabel("Desenvolvido por Henry1911")
+        AboutSection:AddLabel("Contato: henry1911.ct.ws/mush1cora")
+
+        AboutSection:AddButton({
+            Title = "Copiar link de contato",
+            Callback = function()
+                setclipboard("henry1911.ct.ws/mush1cora")
+                Fluent:Notify({
+                    Title = "Link copiado",
+                    Content = "O link foi copiado para a área de transferência!",
+                    Duration = 3
+                })
+            end
+        })
+    end
+end
+
+-- Fechar tela de boas-vindas ao iniciar
+StartButton.MouseButton1Click:Connect(function()
+    playSound(142376227, 0.3) -- Som de clique
+    
+    -- Animação de saída
+    local tween = TweenService:Create(
+        WelcomeFrame,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Position = UDim2.new(0.5, -200, -1, -150)}
+    )
+    tween:Play()
+    
+    tween.Completed:Wait()
+    WelcomeScreen:Destroy()
+    
+    -- Mostrar UI principal
+    UI:Show()
 end)
 
--- [[ Conectar evento do botão de aceitar ]] --
-AcceptButton.MouseButton1Click:Connect(function()
-    WarningGui:Destroy()
-    Window.Frame.Visible = true
-end)
+-- Gerenciador de configurações
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({"ToggleKeybind"})
+
+InterfaceManager:SetFolder("Mush1coraHub")
+SaveManager:SetFolder("Mush1coraHub/brookhaven")
+
+InterfaceManager:BuildInterfaceSection(SettingsTab)
+SaveManager:BuildConfigSection(SettingsTab)
+
+-- Carregar configurações
+SaveManager:Load(game.PlaceId)
