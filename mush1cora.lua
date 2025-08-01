@@ -43,7 +43,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- Esconde a janela inicialmente
-Window.Frame.Visible = false
+Window.Frame.Visible = true
 
 -- [[ Notificação Inicial ]] --
 Rayfield:Notify({
