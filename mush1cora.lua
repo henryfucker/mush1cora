@@ -1,4 +1,4 @@
--- Mush1cora Script Hub v2.0 Premium
+-- Mush1cora Script Hub v2.0 Premium - UI Refeita com base na EzLauncher
 -- Por Henry1911 (henry1911.fwh.is/mush1cora)
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -12,10 +12,13 @@ local Mouse = LocalPlayer:GetMouse()
 local CONFIG = {
     NOME_HUB = "mush1cora",
     VERSAO = "v2.0 Premium",
-    COR_PRINCIPAL = Color3.fromRGB(170, 0, 0),
-    COR_SECUNDARIA = Color3.fromRGB(20, 20, 20),
-    COR_TERCIARIA = Color3.fromRGB(40, 40, 40),
-    FONTE = "Gotham",
+    COR_PRINCIPAL = Color3.fromRGB(170, 0, 0), -- Vermelho principal
+    COR_SECUNDARIA = Color3.fromRGB(20, 20, 20), -- Fundo escuro
+    COR_TERCIARIA = Color3.fromRGB(40, 40, 40), -- Elementos secundários
+    COR_DESTAQUE = Color3.fromRGB(18, 98, 159), -- Azul para destaques (da EzLauncher)
+    COR_TEXTO_PRIMARIO = Color3.fromRGB(211, 216, 226), -- Texto claro (da EzLauncher)
+    COR_TEXTO_SECUNDARIO = Color3.fromRGB(92, 106, 124), -- Texto secundário (da EzLauncher)
+    FONTE = Enum.Font.SourceSans, -- Fonte da EzLauncher
     SITE_OFICIAL = "henry1911.fwh.is/mush1cora",
     LINK_ATUALIZACOES = "https://henry1911.ct.ws/mush1cora",
     SCRIPTS = {
@@ -36,19 +39,7 @@ StarterGui:SetCore("SendNotification", {
     Icon = "rbxassetid://6726285816"
 })
 
--- Função para criar gradientes
-local function CreateGradient(parent)
-    local gradient = Instance.new("UIGradient")
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, CONFIG.COR_PRINCIPAL),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 0, 0))
-    })
-    gradient.Rotation = 90
-    gradient.Parent = parent
-    return gradient
-end
-
--- Função para criar sombras
+-- Função para criar sombras (mantida da original)
 local function CreateShadow(parent)
     local shadow = Instance.new("ImageLabel")
     shadow.Name = "Shadow"
@@ -64,12 +55,11 @@ local function CreateShadow(parent)
     return shadow
 end
 
--- Janela de aviso inicial premium
+-- Janela de aviso inicial premium (mantida da original)
 local function CriarJanelaAviso()
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "Mush1coraWarning"
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
     local MainFrame = Instance.new("Frame")
     MainFrame.Size = UDim2.new(0, 500, 0, 400)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
@@ -82,7 +72,6 @@ local function CriarJanelaAviso()
     TopBar.Size = UDim2.new(1, 0, 0, 40)
     TopBar.BackgroundColor3 = CONFIG.COR_PRINCIPAL
     TopBar.BorderSizePixel = 0
-    CreateGradient(TopBar)
 
     local Title = Instance.new("TextLabel")
     Title.Text = "⚠️ AVISO IMPORTANTE ⚠️"
@@ -94,7 +83,7 @@ local function CriarJanelaAviso()
     Title.TextXAlignment = Enum.TextXAlignment.Center
 
     local WarningText = Instance.new("TextLabel")
-    WarningText.Text = "Você está prestes a iniciar a mush1cora Hub.\n\nAo prosseguir, você assume total responsabilidade por quaisquer penalidades aplicadas pela administração do Roblox.\n\nTodos os scripts contidos são para fins educacionais e de modificação visual, não afetando a gameplay de outros jogadores.\n\nSite oficial: " .. CONFIG.SITE_OFICIAL
+    WarningText.Text = "Você está prestes a iniciar a mush1cora Hub.\nAo prosseguir, você assume total responsabilidade por quaisquer penalidades aplicadas pela administração do Roblox.\nTodos os scripts contidos são para fins educacionais e de modificação visual, não afetando a gameplay de outros jogadores.\nSite oficial: " .. CONFIG.SITE_OFICIAL
     WarningText.Font = CONFIG.FONTE
     WarningText.TextSize = 16
     WarningText.TextColor3 = Color3.new(1, 1, 1)
@@ -113,12 +102,10 @@ local function CriarJanelaAviso()
     StartButton.BackgroundColor3 = CONFIG.COR_PRINCIPAL
     StartButton.TextColor3 = Color3.new(1, 1, 1)
     StartButton.BorderSizePixel = 0
-    CreateGradient(StartButton)
 
     StartButton.MouseEnter:Connect(function()
         TweenService:Create(StartButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 0, 0)}):Play()
     end)
-
     StartButton.MouseLeave:Connect(function()
         TweenService:Create(StartButton, TweenInfo.new(0.2), {BackgroundColor3 = CONFIG.COR_PRINCIPAL}):Play()
     end)
@@ -150,7 +137,7 @@ local function CriarJanelaAviso()
     TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 500, 0, 400)}):Play()
 end
 
--- Função para criar a GUI principal premium
+-- Função para criar a GUI principal com nova UI
 function CriarMainGUI()
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "Mush1coraHub"
@@ -158,6 +145,7 @@ function CriarMainGUI()
 
     -- Frame principal
     local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
     MainFrame.Size = UDim2.new(0, 700, 0, 500)
     MainFrame.Position = UDim2.new(0.5, -350, 0.5, -250)
     MainFrame.BackgroundColor3 = CONFIG.COR_SECUNDARIA
@@ -170,12 +158,13 @@ function CriarMainGUI()
 
     -- Topbar
     local Topbar = Instance.new("Frame")
+    Topbar.Name = "Topbar"
     Topbar.Size = UDim2.new(1, 0, 0, 40)
     Topbar.BackgroundColor3 = CONFIG.COR_PRINCIPAL
     Topbar.BorderSizePixel = 0
-    CreateGradient(Topbar)
 
     local Title = Instance.new("TextLabel")
+    Title.Name = "Title"
     Title.Text = CONFIG.NOME_HUB .. "  |  " .. CONFIG.VERSAO
     Title.Font = CONFIG.FONTE
     Title.TextSize = 20
@@ -186,6 +175,7 @@ function CriarMainGUI()
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local CloseButton = Instance.new("TextButton")
+    CloseButton.Name = "CloseButton"
     CloseButton.Text = "X"
     CloseButton.Font = CONFIG.FONTE
     CloseButton.TextSize = 18
@@ -198,12 +188,12 @@ function CriarMainGUI()
     CloseButton.MouseEnter:Connect(function()
         CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
     end)
-
     CloseButton.MouseLeave:Connect(function()
         CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
     end)
 
     local MinimizeButton = Instance.new("TextButton")
+    MinimizeButton.Name = "MinimizeButton"
     MinimizeButton.Text = "_"
     MinimizeButton.Font = CONFIG.FONTE
     MinimizeButton.TextSize = 18
@@ -216,55 +206,281 @@ function CriarMainGUI()
     MinimizeButton.MouseEnter:Connect(function()
         MinimizeButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
     end)
-
     MinimizeButton.MouseLeave:Connect(function()
         MinimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     end)
 
-    -- Sidebar
+    -- Container para seções
+    local ContentContainer = Instance.new("Frame")
+    ContentContainer.Name = "ContentContainer"
+    ContentContainer.Size = UDim2.new(1, -20, 1, -60) -- Ajustado para espaço da topbar e padding
+    ContentContainer.Position = UDim2.new(0, 10, 0, 50) -- Abaixo da topbar
+    ContentContainer.BackgroundTransparency = 1
+    ContentContainer.ClipsDescendants = true
+
+    -- Sidebar (novo estilo)
     local Sidebar = Instance.new("Frame")
-    Sidebar.Size = UDim2.new(0, 180, 1, -40)
-    Sidebar.Position = UDim2.new(0, 0, 0, 40)
-    Sidebar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    Sidebar.Name = "Sidebar"
+    Sidebar.Size = UDim2.new(0, 180, 1, 0)
+    Sidebar.Position = UDim2.new(0, 0, 0, 0)
+    Sidebar.BackgroundColor3 = Color3.fromRGB(35, 47, 62) -- Cor da EzLauncher
     Sidebar.BorderSizePixel = 0
 
-    local Scroll = Instance.new("ScrollingFrame")
-    Scroll.Size = UDim2.new(1, 0, 1, -10)
-    Scroll.Position = UDim2.new(0, 0, 0, 10)
-    Scroll.BackgroundTransparency = 1
-    Scroll.ScrollBarThickness = 5
-    Scroll.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
+    local SidebarTopBar = Instance.new("Frame")
+    SidebarTopBar.Name = "TopBar"
+    SidebarTopBar.Size = UDim2.new(0, 2, 0, 32)
+    SidebarTopBar.Position = UDim2.new(0, 0, 0, 0)
+    SidebarTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
+    SidebarTopBar.BorderSizePixel = 0
 
-    local ButtonLayout = Instance.new("UIListLayout")
-    ButtonLayout.Padding = UDim.new(0, 5)
+    local SidebarDivider = Instance.new("Frame")
+    SidebarDivider.Name = "Divider"
+    SidebarDivider.Size = UDim2.new(1, 0, 0, 1)
+    SidebarDivider.Position = UDim2.new(0, 0, 0, 32)
+    SidebarDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
+    SidebarDivider.BackgroundTransparency = 0.75
+    SidebarDivider.BorderSizePixel = 0
 
-    -- Conteúdo
-    local ContentFrame = Instance.new("Frame")
-    ContentFrame.Size = UDim2.new(1, -180, 1, -40)
-    ContentFrame.Position = UDim2.new(0, 180, 0, 40)
-    ContentFrame.BackgroundTransparency = 1
+    local SidebarTitle = Instance.new("TextLabel")
+    SidebarTitle.Name = "Title"
+    SidebarTitle.Text = "Menu"
+    SidebarTitle.Font = CONFIG.FONTE
+    SidebarTitle.TextSize = 14
+    SidebarTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+    SidebarTitle.BackgroundTransparency = 1
+    SidebarTitle.Size = UDim2.new(1, -12, 0, 24)
+    SidebarTitle.Position = UDim2.new(0, 12, 0, 4)
+    SidebarTitle.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Botão flutuante
-    local FloatingButton = Instance.new("TextButton")
-    FloatingButton.Text = ">"
-    FloatingButton.Size = UDim2.new(0, 50, 0, 50)
-    FloatingButton.Position = UDim2.new(0, 10, 0.5, -25)
-    FloatingButton.BackgroundColor3 = CONFIG.COR_PRINCIPAL
-    FloatingButton.TextColor3 = Color3.new(1, 1, 1)
-    FloatingButton.Font = CONFIG.FONTE
-    FloatingButton.TextSize = 20
-    FloatingButton.Visible = false
-    FloatingButton.BorderSizePixel = 0
-    CreateGradient(FloatingButton)
-    CreateShadow(FloatingButton)
+    local SidebarScroll = Instance.new("ScrollingFrame")
+    SidebarScroll.Name = "Scroll"
+    SidebarScroll.Size = UDim2.new(1, 0, 1, -42) -- Espaço para topbar
+    SidebarScroll.Position = UDim2.new(0, 0, 0, 42)
+    SidebarScroll.BackgroundTransparency = 1
+    SidebarScroll.ScrollBarThickness = 5
+    SidebarScroll.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
+    SidebarScroll.CanvasSize = UDim2.new(0, 0, 0, 0) -- Será ajustado dinamicamente
 
-    FloatingButton.MouseEnter:Connect(function()
-        TweenService:Create(FloatingButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 0, 0)}):Play()
+    local SidebarLayout = Instance.new("UIListLayout")
+    SidebarLayout.Padding = UDim.new(0, 5)
+    SidebarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    SidebarLayout.Parent = SidebarScroll
+
+    -- Função para criar botão de sidebar (estilo EzLauncher)
+    local function CriarBotaoSidebar(nome)
+        local button = Instance.new("TextButton")
+        button.Name = nome .. "Button"
+        button.Text = nome
+        button.Font = CONFIG.FONTE
+        button.TextSize = 16
+        button.Size = UDim2.new(0.9, 0, 0, 40)
+        button.BackgroundColor3 = CONFIG.COR_TERCIARIA
+        button.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+        button.BorderSizePixel = 0
+        button.AutoButtonColor = false -- Desativar cor automática
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(112, 112, 112) -- Cor da borda da EzLauncher
+        stroke.Thickness = 1
+        stroke.Parent = button
+
+        button.MouseEnter:Connect(function()
+            button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end)
+        button.MouseLeave:Connect(function()
+            button.BackgroundColor3 = CONFIG.COR_TERCIARIA
+        end)
+
+        return button
+    end
+
+    -- Seções de conteúdo (novo estilo)
+    local Sections = {}
+
+    -- Seção Sobre (estilo EzLauncher)
+    local SobreSection = Instance.new("Frame")
+    SobreSection.Name = "SobreSection"
+    SobreSection.Size = UDim2.new(1, -190, 1, 0) -- Largura total menos sidebar
+    SobreSection.Position = UDim2.new(0, 190, 0, 0) -- À direita da sidebar
+    SobreSection.BackgroundTransparency = 1
+    SobreSection.Visible = true
+
+    local SobreTopBar = Instance.new("Frame")
+    SobreTopBar.Name = "TopBar"
+    SobreTopBar.Size = UDim2.new(0, 2, 0, 32)
+    SobreTopBar.Position = UDim2.new(0, 0, 0, 0)
+    SobreTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
+    SobreTopBar.BorderSizePixel = 0
+
+    local SobreDivider = Instance.new("Frame")
+    SobreDivider.Name = "Divider"
+    SobreDivider.Size = UDim2.new(1, 0, 0, 1)
+    SobreDivider.Position = UDim2.new(0, 0, 0, 32)
+    SobreDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
+    SobreDivider.BackgroundTransparency = 0.75
+    SobreDivider.BorderSizePixel = 0
+
+    local SobreTitle = Instance.new("TextLabel")
+    SobreTitle.Name = "Title"
+    SobreTitle.Text = "Sobre"
+    SobreTitle.Font = CONFIG.FONTE
+    SobreTitle.TextSize = 14
+    SobreTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+    SobreTitle.BackgroundTransparency = 1
+    SobreTitle.Size = UDim2.new(1, -12, 0, 24)
+    SobreTitle.Position = UDim2.new(0, 12, 0, 4)
+    SobreTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Saudacao = Instance.new("TextLabel")
+    Saudacao.Name = "Saudacao"
+    Saudacao.Text = GetSaudacao() .. ", " .. LocalPlayer.DisplayName
+    Saudacao.Font = CONFIG.FONTE
+    Saudacao.TextSize = 24
+    Saudacao.TextColor3 = CONFIG.COR_PRINCIPAL
+    Saudacao.BackgroundTransparency = 1
+    Saudacao.Size = UDim2.new(1, -20, 0, 30)
+    Saudacao.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar
+    Saudacao.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Avatar = Instance.new("ImageLabel")
+    Avatar.Name = "Avatar"
+    Avatar.Size = UDim2.new(0, 100, 0, 100)
+    Avatar.Position = UDim2.new(0, 10, 0, 82) -- Abaixo da saudação
+    Avatar.BorderSizePixel = 0
+    Avatar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    local AvatarStroke = Instance.new("UIStroke")
+    AvatarStroke.Color = CONFIG.COR_PRINCIPAL
+    AvatarStroke.Thickness = 2
+    AvatarStroke.Parent = Avatar
+    pcall(function()
+        Avatar.Image = Players:GetUserThumbnailAsync(
+            LocalPlayer.UserId,
+            Enum.ThumbnailType.HeadShot,
+            Enum.ThumbnailSize.Size420x420
+        )
     end)
 
-    FloatingButton.MouseLeave:Connect(function()
-        TweenService:Create(FloatingButton, TweenInfo.new(0.2), {BackgroundColor3 = CONFIG.COR_PRINCIPAL}):Play()
-    end)
+    local InfoFrame = Instance.new("Frame")
+    InfoFrame.Name = "InfoFrame"
+    InfoFrame.Size = UDim2.new(1, -130, 0.6, 0) -- Ajustar largura e altura
+    InfoFrame.Position = UDim2.new(0, 120, 0, 82) -- À direita do avatar
+    InfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    InfoFrame.BorderSizePixel = 0
+    local InfoStroke = Instance.new("UIStroke")
+    InfoStroke.Color = CONFIG.COR_PRINCIPAL
+    InfoStroke.Thickness = 1
+    InfoStroke.Parent = InfoFrame
+
+    local InfoText = Instance.new("TextLabel")
+    InfoText.Name = "InfoText"
+    InfoText.Text = string.format(
+        "%s %s\n• Scripts disponíveis: %d\n• Atualizações automáticas\n• Site oficial: %s\nÚltima versão: %s\n%s",
+        CONFIG.NOME_HUB,
+        CONFIG.VERSAO,
+        #CONFIG.SCRIPTS,
+        CONFIG.SITE_OFICIAL,
+        CONFIG.VERSAO,
+        "Desenvolvido com ❤️ por Henry1911"
+    )
+    InfoText.Font = CONFIG.FONTE
+    InfoText.TextSize = 14
+    InfoText.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+    InfoText.BackgroundTransparency = 1
+    InfoText.Size = UDim2.new(0.9, 0, 0.9, 0)
+    InfoText.Position = UDim2.new(0.05, 0, 0.05, 0)
+    InfoText.TextXAlignment = Enum.TextXAlignment.Left
+    InfoText.TextYAlignment = Enum.TextYAlignment.Top
+    InfoText.TextWrapped = true
+
+    -- Seção Scripts (estilo EzLauncher)
+    local ScriptsSection = Instance.new("Frame")
+    ScriptsSection.Name = "ScriptsSection"
+    ScriptsSection.Size = UDim2.new(1, -190, 1, 0) -- Largura total menos sidebar
+    ScriptsSection.Position = UDim2.new(0, 190, 0, 0) -- À direita da sidebar
+    ScriptsSection.BackgroundTransparency = 1
+    ScriptsSection.Visible = false
+
+    local ScriptsTopBar = Instance.new("Frame")
+    ScriptsTopBar.Name = "TopBar"
+    ScriptsTopBar.Size = UDim2.new(0, 2, 0, 32)
+    ScriptsTopBar.Position = UDim2.new(0, 0, 0, 0)
+    ScriptsTopBar.BackgroundColor3 = CONFIG.COR_DESTAQUE
+    ScriptsTopBar.BorderSizePixel = 0
+
+    local ScriptsDivider = Instance.new("Frame")
+    ScriptsDivider.Name = "Divider"
+    ScriptsDivider.Size = UDim2.new(1, 0, 0, 1)
+    ScriptsDivider.Position = UDim2.new(0, 0, 0, 32)
+    ScriptsDivider.BackgroundColor3 = Color3.fromRGB(112, 112, 112)
+    ScriptsDivider.BackgroundTransparency = 0.75
+    ScriptsDivider.BorderSizePixel = 0
+
+    local ScriptsTitle = Instance.new("TextLabel")
+    ScriptsTitle.Name = "Title"
+    ScriptsTitle.Text = "Scripts"
+    ScriptsTitle.Font = CONFIG.FONTE
+    ScriptsTitle.TextSize = 14
+    ScriptsTitle.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+    ScriptsTitle.BackgroundTransparency = 1
+    ScriptsTitle.Size = UDim2.new(1, -12, 0, 24)
+    ScriptsTitle.Position = UDim2.new(0, 12, 0, 4)
+    ScriptsTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local ScriptsScroll = Instance.new("ScrollingFrame")
+    ScriptsScroll.Name = "Scroll"
+    ScriptsScroll.Size = UDim2.new(1, -20, 1, -52) -- Espaço para topbar e padding
+    ScriptsScroll.Position = UDim2.new(0, 10, 0, 42) -- Abaixo da topbar
+    ScriptsScroll.BackgroundTransparency = 1
+    ScriptsScroll.ScrollBarThickness = 5
+    ScriptsScroll.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
+    ScriptsScroll.CanvasSize = UDim2.new(0, 0, 0, 0) -- Será ajustado dinamicamente
+    ScriptsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y -- Ajuste automático
+
+    local ScriptsLayout = Instance.new("UIListLayout")
+    ScriptsLayout.Padding = UDim.new(0, 10)
+    ScriptsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    ScriptsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ScriptsLayout.Parent = ScriptsScroll
+
+    -- Função para criar botão de script (estilo EzLauncher)
+    local function CriarBotaoScript(nome)
+        local button = Instance.new("TextButton")
+        button.Name = nome .. "ScriptButton"
+        button.Text = nome
+        button.Font = CONFIG.FONTE
+        button.TextSize = 16
+        button.Size = UDim2.new(0.95, 0, 0, 40)
+        button.BackgroundColor3 = Color3.fromRGB(41, 53, 68) -- Cor da EzLauncher
+        button.TextColor3 = CONFIG.COR_TEXTO_PRIMARIO
+        button.BorderSizePixel = 0
+        button.AutoButtonColor = false -- Desativar cor automática
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(112, 112, 112) -- Cor da borda da EzLauncher
+        stroke.Thickness = 1
+        stroke.Parent = button
+
+        button.MouseEnter:Connect(function()
+            button.BackgroundColor3 = Color3.fromRGB(50, 60, 75) -- Cor ao passar o mouse
+        end)
+        button.MouseLeave:Connect(function()
+            button.BackgroundColor3 = Color3.fromRGB(41, 53, 68)
+        end)
+
+        return button
+    end
+
+    -- Preencher a seção de scripts
+    for nome, url in pairs(CONFIG.SCRIPTS) do
+        local button = CriarBotaoScript(nome)
+        button.Parent = ScriptsScroll
+
+        button.MouseButton1Click:Connect(function()
+            ShowNotification("Script Executado", "Iniciando " .. nome .. "...", "rbxassetid://6726285816")
+            loadstring(game:HttpGet(url, true))()
+        end)
+    end
 
     -- Funções úteis
     local function GetSaudacao()
@@ -278,175 +494,20 @@ function CriarMainGUI()
         end
     end
 
-    local function CriarBotaoSidebar(nome)
-        local button = Instance.new("TextButton")
-        button.Text = nome
-        button.Font = CONFIG.FONTE
-        button.TextSize = 16
-        button.Size = UDim2.new(0.9, 0, 0, 40)
-        button.Position = UDim2.new(0.05, 0, 0, 0)
-        button.BackgroundColor3 = CONFIG.COR_TERCIARIA
-        button.TextColor3 = Color3.new(1, 1, 1)
-        button.BorderSizePixel = 0
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = CONFIG.COR_PRINCIPAL
-        stroke.Thickness = 1
-        stroke.Parent = button
-
-        button.MouseEnter:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
-        end)
-
-        button.MouseLeave:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = CONFIG.COR_TERCIARIA}):Play()
-        end)
-
-        return button
-    end
-
-    -- Criar seções
-    local Sections = {}
-
-    -- Seção Sobre
-    local SobreSection = Instance.new("Frame")
-    SobreSection.Size = UDim2.new(1, 0, 1, 0)
-    SobreSection.BackgroundTransparency = 1
-    SobreSection.Visible = true
-
-    local Saudacao = Instance.new("TextLabel")
-    Saudacao.Text = GetSaudacao() .. ", " .. LocalPlayer.DisplayName
-    Saudacao.Font = CONFIG.FONTE
-    Saudacao.TextSize = 24
-    Saudacao.TextColor3 = CONFIG.COR_PRINCIPAL
-    Saudacao.BackgroundTransparency = 1
-    Saudacao.Size = UDim2.new(1, -20, 0, 30)
-    Saudacao.Position = UDim2.new(0, 20, 0, 10)
-    Saudacao.TextXAlignment = Enum.TextXAlignment.Left
-
-    local Avatar = Instance.new("ImageLabel")
-    Avatar.Size = UDim2.new(0, 150, 0, 150)
-    Avatar.Position = UDim2.new(0, 20, 0, 50)
-    Avatar.BorderSizePixel = 0
-    Avatar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-
-    local AvatarStroke = Instance.new("UIStroke")
-    AvatarStroke.Color = CONFIG.COR_PRINCIPAL
-    AvatarStroke.Thickness = 2
-    AvatarStroke.Parent = Avatar
-
-    pcall(function()
-        Avatar.Image = Players:GetUserThumbnailAsync(
-            LocalPlayer.UserId,
-            Enum.ThumbnailType.HeadShot,
-            Enum.ThumbnailSize.Size420x420
-        )
-    end)
-
-    local InfoFrame = Instance.new("Frame")
-    InfoFrame.Size = UDim2.new(0.7, -20, 0.7, 0)
-    InfoFrame.Position = UDim2.new(0.3, 10, 0, 50)
-    InfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    InfoFrame.BorderSizePixel = 0
-
-    local InfoStroke = Instance.new("UIStroke")
-    InfoStroke.Color = CONFIG.COR_PRINCIPAL
-    InfoStroke.Thickness = 1
-    InfoStroke.Parent = InfoFrame
-
-    local InfoText = Instance.new("TextLabel")
-    InfoText.Text = string.format(
-        "%s %s\n• Scripts disponíveis: %d\n• Atualizações automáticas\n• Site oficial: %s\nÚltima versão: %s\n%s",
-        CONFIG.NOME_HUB,
-        CONFIG.VERSAO,
-        #CONFIG.SCRIPTS,
-        CONFIG.SITE_OFICIAL,
-        CONFIG.VERSAO,
-        "Desenvolvido com ❤️ por Henry1911"
-    )
-    InfoText.Font = CONFIG.FONTE
-    InfoText.TextSize = 14
-    InfoText.TextColor3 = Color3.new(1, 1, 1)
-    InfoText.BackgroundTransparency = 1
-    InfoText.Size = UDim2.new(0.9, 0, 0.9, 0)
-    InfoText.Position = UDim2.new(0.05, 0, 0.05, 0)
-    InfoText.TextXAlignment = Enum.TextXAlignment.Left
-    InfoText.TextYAlignment = Enum.TextYAlignment.Top
-    InfoText.TextWrapped = true
-
-    -- Seção Scripts
-    local ScriptsSection = Instance.new("ScrollingFrame")
-    ScriptsSection.Size = UDim2.new(1, -20, 1, -20)
-    ScriptsSection.Position = UDim2.new(0, 10, 0, 10)
-    ScriptsSection.BackgroundTransparency = 1
-    ScriptsSection.Visible = false
-    ScriptsSection.ScrollBarThickness = 5
-    ScriptsSection.ScrollBarImageColor3 = CONFIG.COR_PRINCIPAL
-
-    local ScriptsLayout = Instance.new("UIListLayout")
-    ScriptsLayout.Padding = UDim.new(0, 15)
-
-    local ScriptsPadding = Instance.new("UIPadding")
-    ScriptsPadding.PaddingTop = UDim.new(0, 10)
-    ScriptsPadding.PaddingLeft = UDim.new(0, 10)
-
-    for nome, url in pairs(CONFIG.SCRIPTS) do
-        local button = Instance.new("TextButton")
-        button.Text = nome
-        button.Font = CONFIG.FONTE
-        button.TextSize = 18
-        button.Size = UDim2.new(0.95, 0, 0, 50)
-        button.BackgroundColor3 = CONFIG.COR_TERCIARIA
-        button.TextColor3 = Color3.new(1, 1, 1)
-        button.BorderSizePixel = 0
-
-        local buttonStroke = Instance.new("UIStroke")
-        buttonStroke.Color = CONFIG.COR_PRINCIPAL
-        buttonStroke.Thickness = 1
-        buttonStroke.Parent = button
-
-        local buttonGradient = Instance.new("UIGradient")
-        buttonGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+    local function ShowNotification(title, text, icon)
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = 3,
+            Icon = icon
         })
-        buttonGradient.Rotation = 90
-        buttonGradient.Parent = button
-
-        button.MouseEnter:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
-        end)
-
-        button.MouseLeave:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = CONFIG.COR_TERCIARIA}):Play()
-        end)
-
-        button.MouseButton1Click:Connect(function()
-            ShowNotification("Script Executado", "Iniciando " .. nome .. "...", "rbxassetid://6726285816")
-            loadstring(game:HttpGet(url, true))()
-        end)
-
-        button.Parent = ScriptsSection
     end
-
-    -- Parentagem
-    SobreSection.Parent = ContentFrame
-    Saudacao.Parent = SobreSection
-    Avatar.Parent = SobreSection
-    InfoFrame.Parent = SobreSection
-    InfoText.Parent = InfoFrame
-    ScriptsSection.Parent = ContentFrame
-    ScriptsLayout.Parent = ScriptsSection
-    ScriptsPadding.Parent = ScriptsSection
-
-    Sections["Sobre"] = SobreSection
-    Sections["Scripts"] = ScriptsSection
 
     -- Criar botões sidebar
     local sobreBtn = CriarBotaoSidebar("Sobre")
-    sobreBtn.Parent = Scroll
-
+    sobreBtn.Parent = SidebarScroll
     local scriptsBtn = CriarBotaoSidebar("Scripts")
-    scriptsBtn.Parent = Scroll
+    scriptsBtn.Parent = SidebarScroll
 
     -- Eventos dos botões sidebar
     sobreBtn.MouseButton1Click:Connect(function()
@@ -455,7 +516,6 @@ function CriarMainGUI()
         end
         SobreSection.Visible = true
     end)
-
     scriptsBtn.MouseButton1Click:Connect(function()
         for _, section in pairs(Sections) do
             section.Visible = false
@@ -470,20 +530,12 @@ function CriarMainGUI()
         tween.Completed:Wait()
         ScreenGui:Destroy()
     end)
-
     MinimizeButton.MouseButton1Click:Connect(function()
         local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0)})
         tween:Play()
         tween.Completed:Wait()
         MainFrame.Visible = false
-        FloatingButton.Visible = true
-    end)
-
-    FloatingButton.MouseButton1Click:Connect(function()
-        FloatingButton.Visible = false
-        MainFrame.Visible = true
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 700, 0, 500)})
-        tween:Play()
+        -- Aqui você pode adicionar um botão flutuante se quiser
     end)
 
     -- Finalizar parentagem
@@ -491,18 +543,81 @@ function CriarMainGUI()
     Title.Parent = Topbar
     MinimizeButton.Parent = Topbar
     CloseButton.Parent = Topbar
-    Sidebar.Parent = MainFrame
-    Scroll.Parent = Sidebar
-    ButtonLayout.Parent = Scroll
-    ContentFrame.Parent = MainFrame
+
+    ContentContainer.Parent = MainFrame
+
+    Sidebar.Parent = ContentContainer
+    SidebarTopBar.Parent = Sidebar
+    SidebarDivider.Parent = Sidebar
+    SidebarTitle.Parent = Sidebar
+    SidebarScroll.Parent = Sidebar
+
+    SobreSection.Parent = ContentContainer
+    SobreTopBar.Parent = SobreSection
+    SobreDivider.Parent = SobreSection
+    SobreTitle.Parent = SobreSection
+    Saudacao.Parent = SobreSection
+    Avatar.Parent = SobreSection
+    InfoFrame.Parent = SobreSection
+    InfoText.Parent = InfoFrame
+
+    ScriptsSection.Parent = ContentContainer
+    ScriptsTopBar.Parent = ScriptsSection
+    ScriptsDivider.Parent = ScriptsSection
+    ScriptsTitle.Parent = ScriptsSection
+    ScriptsScroll.Parent = ScriptsSection
+
+    Sections["Sobre"] = SobreSection
+    Sections["Scripts"] = ScriptsSection
+
     MainFrame.Parent = ScreenGui
-    FloatingButton.Parent = ScreenGui
     ScreenGui.Parent = game.CoreGui
 
     -- Animação de entrada
     MainFrame.Size = UDim2.new(0, 0, 0, 0)
     local tween = TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 700, 0, 500)})
     tween:Play()
+
+    -- Tornar a janela arrastável
+    local function MakeDraggable(guiObject)
+        local dragging
+        local dragInput
+        local dragStart
+        local startPos
+
+        local function update(input)
+            local delta = input.Position - dragStart
+            guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+
+        guiObject.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = guiObject.Position
+
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+
+        guiObject.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                update(input)
+            end
+        end)
+    end
+
+    MakeDraggable(MainFrame)
 end
 
 -- Iniciar
